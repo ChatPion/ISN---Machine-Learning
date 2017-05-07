@@ -79,3 +79,7 @@ class Game:
 game = Game (1/5, 5, 3, 0)
 for i in range (15):
     print(game.tick(Game.STAND))
+
+
+
+
