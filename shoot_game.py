@@ -3,30 +3,46 @@
 # puis avancée des tirs
 # puis créer ou pas une balle
 # puis tomber de 1
+# boucliers : vaut 0 quand disponible, sinon vaut sa valeur max
+from enum import Enum
+
+
+class Actions(Enum):
+    STAND = 0
+    JUMP = 1
+
+class Status(Enum):
+    NOTHING = 0
+    HIT = 1
+    SHIELD_HIT = 2
+    DODGED = 3
 
 class Game:
 
     STAND = 0
     JUMP = 1
 
-    def __init__(self, frequency, width, vision, shields):
+    HIT = 2
+    UNHARMED = 3
+
+    def __init__(self, frequency, width, shields=None):
+        """
+        :param frequency: bullets apparition frequency 
+        :param width: bullet spawn distance
+        :param shields: array with shields' cooldown time (0 : furthest shield)
+        """
+        if shields is None:
+            shields = [4, 2]
+
         self.frequency = frequency
         self.width = width
-        self.vision = vision
         self.bullets = []
         self.deadbullets = []
         self.is_jumping = 0
         self.time = 0
-        self.shieldext = 0
-        self.shieldint = 0
-        if shields == 1:
-            self.shieldext = 3
-            self.shieldint = 0
-        elif shields == 2:
-            self.shieldext = 4
-            self.shieldint = 2
-        self.maxshieldext = self.shieldext
-        self.maxshieldint = self.shieldint
+        self.shields = shields
+        self.shields_cooldown = [i for i in shields] # Need to copy
+        self.player_status = Status.NOTHING
 
     def shoot(self, position, direction):
         self.bullets.append([position, direction])
@@ -36,57 +52,72 @@ class Game:
             self.is_jumping = 2
 
     def move_bullets(self):
+        """
+        
+        :return: True if a bullet reached 0 
+        """
         to_kill = 0
         to_delete = 0
-        for i in range (len(self.bullets)):
+        for i in range(len(self.bullets)):
             self.bullets[i][0] += self.bullets[i][1]
             if self.bullets[i][0] == 0:
                 to_kill += 1
-        for i in range (len(self.deadbullets)):
+        for i in range(len(self.deadbullets)):
             self.deadbullets[i][0] += self.deadbullets[i][1]
             if abs(self.deadbullets[i][0]) > self.width:
                 to_delete += 1
-        for i in range (to_kill):
+        for i in range(to_kill):
             self.deadbullets.append([0, self.bullets[0][1]])
             del self.bullets[0]
-        for i in range (to_delete):
+        for i in range(to_delete):
             del self.deadbullets[0]
+
+        return (to_kill > 0)
+
+    def take_dmg(self):
+        if self.is_jumping > 0:
+            self.player_status.DODGED
+            return False
+
+        for i in range(len(self.shields)):
+            if self.shields[i] == 0:
+                self.shields[i] = self.shields_cooldown[i]
+                self.player_status = Status.SHIELD_HIT
+                return False
+
+        self.player_status = Status.HIT
+        return True
 
     def fall(self):
         if self.is_jumping > 0:
             self.is_jumping -= 1
 
-        if self.is_jumping > 0:
-            return 2
-        else:
-            if self.shieldext < self.maxshieldext + (self.maxshieldext == 0) and self.shieldint < self.maxshieldint + (self.maxshieldint == 0):
-                return 0
-            else:
-                if self.deadbullets != [] and self.deadbullets[len(self.deadbullets)-1][0] == 0:
-                    if self.shieldext == self.maxshieldext:
-                        self.shieldext = 0
-                    else:
-                        self.shieldint = 0
-                return 1
+    def regen_shields(self):
+        for i in range(len(self.shields)):
+            self.shields[i] = max(0, self.shields[i] - 1)
+
+    def generate_bullets(self):
+        if self.time % (1 / self.frequency) == 0:
+            self.shoot(self.width, -1)
 
     def tick(self, action):
+        """
+        
+        :param action: STAND or JUMP 
+        :return: 0 : HIT, UNHARMED
+        """
+
+        self.player_status = Status.NOTHING
+        self.regen_shields()
+
+        self.generate_bullets()
+        bullet_at_center = self.move_bullets()
+
+        self.fall()
         if action == Game.JUMP:
             self.jump()
 
-        if self.shieldext < self.maxshieldext :
-            self.shieldext += 1
-        if self.shieldint < self.maxshieldint :
-            self.shieldint += 1
-
-        self.move_bullets()
-
-        if self.time % (1/self.frequency) == 0:
-            self.shoot(self.width, -1)
+        if bullet_at_center:
+            self.take_dmg()
 
         self.time += 1
-
-        if self.deadbullets != [] and self.deadbullets[len(self.deadbullets)-1][0] == 0:
-            return self.fall()
-        else:
-            self.fall()
-            return 1

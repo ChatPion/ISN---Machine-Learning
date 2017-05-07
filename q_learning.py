@@ -60,12 +60,12 @@ def bullet_pos(bullets, index):
 def game_to_state(game):
     b = game.bullets
     watched_bullets = (bullet_pos(b, 0), bullet_pos(b, 1), bullet_pos(b, 2), bullet_pos(b, 3))
-    shields = (game.shieldint, game.shieldext)
+    shields = tuple(game.shields)
     return (watched_bullets, shields)
     
         
 ## GAME LOOP
-game = Game(1/2, 10, MAX_VISION, 2)
+game = Game(1/2, 10)
 q = QLearning(0.3, 0.8)
 
 hit_nb = [0] * 10
