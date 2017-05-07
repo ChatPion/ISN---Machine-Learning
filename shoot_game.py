@@ -22,7 +22,7 @@ class Game:
         if shields == 1:
             self.shieldext = 2 
             self.shieldint = 0
-        elif shields = 2:
+        elif shields == 2:
             self.shieldext = 4
             self.shieldint = 2
 
