@@ -32,7 +32,7 @@ class Game:
         :param shields: array with shields' cooldown time (0 : furthest shield)
         """
         if shields is None:
-            shields = [4, 2]
+            shields = [6, 3]
 
         self.frequency = frequency
         self.width = width
@@ -93,8 +93,10 @@ class Game:
             self.is_jumping -= 1
 
     def regen_shields(self):
-        for i in range(len(self.shields)):
-            self.shields[i] = max(0, self.shields[i] - 1)
+        for i in range(len(self.shields) - 1, -1, -1):
+            if self.shields[i] != 0:
+                self.shields[i] = max(0, self.shields[i] - 1)
+                break
 
     def generate_bullets(self):
         if self.time % (1 / self.frequency) == 0:
@@ -113,11 +115,12 @@ class Game:
         self.generate_bullets()
         bullet_at_center = self.move_bullets()
 
-        self.fall()
         if action == Game.JUMP:
             self.jump()
+        self.fall()
 
         if bullet_at_center:
             self.take_dmg()
 
         self.time += 1
+

@@ -1,5 +1,5 @@
 import random as rand
-from shoot_game import Game
+from shoot_game import Game, Status
 
 # state : ((bullet1, bullet2, bullet3, bullet4), (shield1, shield2))
 # bullet : [0, 5] (6 : too far)
@@ -65,7 +65,7 @@ def game_to_state(game):
     
         
 ## GAME LOOP
-game = Game(1/2, 10)
+game = Game(1, 10)
 q = QLearning(0.3, 0.8)
 
 hit_nb = [0] * 10
@@ -80,15 +80,16 @@ for i in range(10000):
     action = chosen_action
     while first or game.is_jumping > 0:
         first = False
-        v = game.tick(action)
+        game.tick(action)
+        v = game.player_status
         action = STAND
-        if v == 0:
+        if v == Status.HIT:
             reward += -100
-        elif v == 2:
+        else:
             reward += 10
     q.learn(state1, chosen_action, game_to_state(game), reward)
 
-for i in range(10000):
+for i in range(1000):
     state1 = game_to_state(game)
     chosen_action = q.choose_action(state1, True)
     first = True
@@ -96,9 +97,10 @@ for i in range(10000):
     action = chosen_action
     while first or game.is_jumping > 0:
         first = False
-        v = game.tick(action)
+        game.tick(action)
+        v = game.player_status
         action = STAND
-        if v == 0:
+        if v == Status.HIT:
             hit_nb[i // 1000] += 1
     
 print(hit_nb)
