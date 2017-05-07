@@ -20,11 +20,13 @@ class Game:
         self.shieldext = 0
         self.shieldint = 0
         if shields == 1:
-            self.shieldext = 2 
+            self.shieldext = 3
             self.shieldint = 0
-        elif shields = 2:
+        elif shields == 2:
             self.shieldext = 4
             self.shieldint = 2
+        self.maxshieldext = self.shieldext
+        self.maxshieldint = self.shieldint
 
     def shoot(self, position, direction):
         self.bullets.append([position, direction])
@@ -53,17 +55,30 @@ class Game:
     def fall(self):
         if self.is_jumping > 0:
             self.is_jumping -= 1
+
+        if self.is_jumping > 0:
             return 2
         else:
-            return 0
+            if self.shieldext < self.maxshieldext + (self.maxshieldext == 0) and self.shieldint < self.maxshieldint + (self.maxshieldint == 0):
+                return 0
+            else:
+                if self.deadbullets != [] and self.deadbullets[len(self.deadbullets)-1][0] == 0:
+                    if self.shieldext == self.maxshieldext:
+                        self.shieldext = 0
+                    else:
+                        self.shieldint = 0
+                return 1
 
     def tick(self, action):
         if action == Game.JUMP:
             self.jump()
 
-        print(self.bullets, self.deadbullets)
+        if self.shieldext < self.maxshieldext :
+            self.shieldext += 1
+        if self.shieldint < self.maxshieldint :
+            self.shieldint += 1
+
         self.move_bullets()
-        print(self.bullets, self.deadbullets)
 
         if self.time % (1/self.frequency) == 0:
             self.shoot(self.width, -1)
@@ -79,7 +94,4 @@ class Game:
 game = Game (1/5, 5, 3, 0)
 for i in range (15):
     print(game.tick(Game.STAND))
-
-
-
-
+    print("#####")
