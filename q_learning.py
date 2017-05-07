@@ -50,7 +50,7 @@ class QLearning:
         return rand.choice([STAND, JUMP])
         
         
-MAX_VISION = 3
+MAX_VISION = 5
 
 def bullet_pos(bullets, index):
     if index >= len(bullets):
@@ -59,22 +59,18 @@ def bullet_pos(bullets, index):
 
 def game_to_state(game):
     b = game.bullets
-    watched_bullets = (bullet_pos(b, 0))#, bullet_pos(b, 1), bullet_pos(b, 2), bullet_pos(b, 3))
-    return (watched_bullets)
+    watched_bullets = (bullet_pos(b, 0), bullet_pos(b, 1), bullet_pos(b, 2), bullet_pos(b, 3))
+    shields = (game.shieldint, game.shieldext)
+    return (watched_bullets, shields)
     
         
 ## GAME LOOP
-game = Game(1/3, 10, MAX_VISION)
+game = Game(1/2, 10, MAX_VISION, 2)
 q = QLearning(0.3, 0.8)
 
 hit_nb = [0] * 10
 
 for i in range(10000):
-    # b_pos = ['0'] * 22
-    # for bullet in game.bullets:
-    #     b_pos[11 + bullet[0]] = '1'
-    
-    #print(''.join(b_pos))
 
     state1 = game_to_state(game)
     chosen_action = q.choose_action(state1, False)
@@ -90,17 +86,9 @@ for i in range(10000):
             reward += -100
         elif v == 2:
             reward += 10
-    #    print('hit !')
     q.learn(state1, chosen_action, game_to_state(game), reward)
-    #print("########################")
 
 for i in range(10000):
-    # b_pos = ['0'] * 22
-    # for bullet in game.bullets:
-    #     b_pos[11 + bullet[0]] = '1'
-
-    # print(''.join(b_pos))
-
     state1 = game_to_state(game)
     chosen_action = q.choose_action(state1, True)
     first = True

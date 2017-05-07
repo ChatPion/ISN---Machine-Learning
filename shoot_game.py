@@ -90,8 +90,3 @@ class Game:
         else:
             self.fall()
             return 1
-
-game = Game (1/5, 5, 3, 0)
-for i in range (15):
-    print(game.tick(Game.STAND))
-    print("#####")
