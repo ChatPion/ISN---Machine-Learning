@@ -1,9 +1,9 @@
 import pygame
 from pygame.locals import *
-from shoot_game import Game
+from shoot_game import Game,Actions
 
 pygame.init()
-game = Game(1/4, 5, [0, 0])
+game = Game(0.25, 5, [0, 0])
 
 fenetre = pygame.display.set_mode((64*(2*game.width + 1), 320))
 perso = pygame.image.load("perso.png").convert_alpha()
@@ -15,6 +15,11 @@ while continuer:
         if event.type == QUIT:
             continuer = 0
 
+    fenetre.fill((0, 0, 0))
+
+    pygame.time.Clock().tick(1)
+    game.tick(Actions.STAND)
+
     perso_coords = (0, 0)
     if game.is_jumping == 0:
         perso_coords = (320, 256)
@@ -23,6 +28,8 @@ while continuer:
     else:
         perso_coords = (320, 128)
     fenetre.blit(perso, perso_coords)
+
+    print(game.bullets)
 
     for i in game.bullets:
         fenetre.blit(bullet, (64*(5+i[0]), 256))
