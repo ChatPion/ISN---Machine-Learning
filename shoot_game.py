@@ -115,7 +115,7 @@ class Game:
         self.generate_bullets()
         bullet_at_center = self.move_bullets()
 
-        if action == Game.JUMP:
+        if action == Actions.JUMP:
             self.jump()
         self.fall()
 
