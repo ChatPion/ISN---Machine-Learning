@@ -1,56 +1,80 @@
 import random as rand
-from shoot_game import Game, Status
+from shoot_game import Game, Status, Actions
+import json
+from ast import literal_eval
 
 # state : ((bullet1, bullet2, bullet3, bullet4), (shield1, shield2))
 # bullet : [0, 5] (6 : too far)
 # shield1 : [0, 2] (0 : on)
 # shield2 : [0, 4]
 
-STAND = 0
-JUMP = 1
+# TODO : Add simulation parameters in the savefile
+
+def save_agent(path, agent):
+    file = open(path, "w")
+    data = json.dumps({str(k): v for k, v in agent.actions_value.items()})
+    file.write(data)
+    file.close()
+
+def load_agent(path):
+    file = open(path, "r")
+    data = json.loads(file.read())
+    dict = {}
+    for k, v in data.items():
+        dict[literal_eval(k)] = v
+    return Agent(dict)
+
+class Agent:
+    def __init__(self, actions_values=None):
+        self.actions_value = {}
+        if actions_values is not None:
+            self.actions_value = actions_values
+
+    def get_value(self, state, action=None):
+        if state not in self.actions_value:
+            self.actions_value[state] = [0, 0]
+        ret = self.actions_value[state]
+        if action is not None:
+            ret = ret[action.value]
+        return ret
+
+    def set_value(self, state, action, value):
+        self.actions_value[state][action.value] = value
+
+    def choose_best_action(self, state):
+        stand_val = self.get_value(state, Actions.STAND)
+        jump_val = self.get_value(state, Actions.JUMP)
+        if stand_val >= jump_val:
+            return Actions.STAND
+        return Actions.JUMP
+
+    def explore(self):
+        return rand.choice([Actions.STAND, Actions.JUMP])
+
 
 class QLearning:
     
-    def __init__(self, alpha, gamma, actions_value=None):
+    def __init__(self, alpha, gamma, agent):
         """
         alpha: learning rate
         gamme: discount rate
         """
         self.alpha = alpha
         self.gamma = gamma
-        self.actions_value = {}
-        if actions_value is not None:
-            self.actions_value = actions_value
-    
-    def get_value(self, state, action=None):
-        if state not in self.actions_value:
-            self.actions_value[state] = [0, 0]
-        ret = self.actions_value[state]
-        if action is not None:
-            ret = ret[action]
-        return ret
-        
-    def set_value(self, state, action, value):
-        self.actions_value[state][action] = value
-        
+        self.agent = agent
+
     def learn(self, state_1, action_1, state_2, reward):
-        current = self.get_value(state_1, action_1)
-        max_t2_val = max(self.get_value(state_2))
+        current = self.agent.get_value(state_1, action_1)
+        max_t2_val = max(self.agent.get_value(state_2))
         new_val = current + self.alpha * (reward + self.gamma * max_t2_val - current)
-        self.set_value(state_1, action_1, new_val)
+        self.agent.set_value(state_1, action_1, new_val)
                 
     def choose_action(self, state, real):
         if real or rand.uniform(0, 1) < 0.8: # GREEDY
-            stand_val = self.get_value(state, STAND)
-            jump_val = self.get_value(state, JUMP)
-            if stand_val >= jump_val:
-                return STAND
-            return JUMP
+            return self.agent.choose_best_action(state)
         # exploration
-        return rand.choice([STAND, JUMP])
-        
-        
-MAX_VISION = 5
+        return self.agent.explore()
+
 
 def bullet_pos(bullets, index):
     if index >= len(bullets):
@@ -63,10 +87,12 @@ def game_to_state(game):
     shields = tuple(game.shields)
     return (watched_bullets, shields)
     
-        
+
+MAX_VISION = 5
+
 ## GAME LOOP
 game = Game(1, 10)
-q = QLearning(0.3, 0.8)
+q = QLearning(0.3, 0.8, Agent())
 
 hit_nb = [0] * 10
 
@@ -82,7 +108,7 @@ for i in range(10000):
         first = False
         game.tick(action)
         v = game.player_status
-        action = STAND
+        action = Actions.STAND
         if v == Status.HIT:
             reward += -100
         else:
@@ -99,9 +125,10 @@ for i in range(1000):
         first = False
         game.tick(action)
         v = game.player_status
-        action = STAND
+        action = Actions.STAND
         if v == Status.HIT:
             hit_nb[i // 1000] += 1
     
 print(hit_nb)
-print(q.actions_value)
+print(q.agent.actions_value)
+save_agent('save_file.json', q.agent)
