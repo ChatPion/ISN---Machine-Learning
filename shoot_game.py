@@ -76,7 +76,7 @@ class Game:
 
     def take_dmg(self):
         if self.is_jumping > 0:
-            self.player_status.DODGED
+            self.player_status = Status.DODGED
             return False
 
         for i in range(len(self.shields)):
