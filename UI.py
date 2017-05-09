@@ -20,7 +20,6 @@ while continuer:
     pygame.time.Clock().tick(1)
     game.tick(Actions.STAND)
 
-    perso_coords = (0, 0)
     if game.is_jumping == 0:
         perso_coords = (320, 256)
     elif game.is_jumping == 1:
