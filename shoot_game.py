@@ -49,7 +49,7 @@ class Game:
 
     def jump(self):
         if self.is_jumping == 0:
-            self.is_jumping = 2
+            self.is_jumping = 3
 
     def move_bullets(self):
         """
@@ -108,13 +108,13 @@ class Game:
         :param action: STAND or JUMP 
         :return: 0 : HIT, UNHARMED
         """
-
+        
         self.player_status = Status.NOTHING
         self.regen_shields()
 
-        self.generate_bullets()
         bullet_at_center = self.move_bullets()
-
+        self.generate_bullets()
+        
         if action == Actions.JUMP:
             self.jump()
         self.fall()
