@@ -3,8 +3,9 @@
 # puis avancée des tirs
 # puis créer ou pas une balle
 # puis tomber de 1
-# boucliers : vaut 0 quand disponible, sinon vaut sa valeur max
+# boucliers : vaut 0 quand disponible
 from enum import Enum
+import random as rand
 
 
 class Actions(Enum):
@@ -21,20 +22,19 @@ class Game:
 
     STAND = 0
     JUMP = 1
-
     HIT = 2
     UNHARMED = 3
 
-    def __init__(self, frequency, width, shields=None):
+    def __init__(self, probability, width, shields=None):
         """
-        :param frequency: bullets apparition frequency 
+        :param probability: bullets apparition probability in ]0; 1]
         :param width: bullet spawn distance
-        :param shields: array with shields' cooldown time (0 : ext shield)
+        :param shields: array with shields' cooldown time ([0] : ext shield)
         """
         if shields is None:
             shields = [6, 3]
 
-        self.frequency = frequency
+        self.probability = probability
         self.width = width
         self.bullets = []
         self.deadbullets = []
@@ -99,8 +99,10 @@ class Game:
                 break
 
     def generate_bullets(self):
-        if self.time % (1 / self.frequency) == 0:
+        if rand.uniform(0, 1) < self.probability:
             self.shoot(self.width, -1)
+        if rand.uniform(0, 1) < self.probability:
+            self.shoot(-self.width, 1)
 
     def tick(self, action):
         """
@@ -121,6 +123,6 @@ class Game:
 
         if bullet_at_center:
             self.take_dmg()
-
+            
         self.time += 1
 

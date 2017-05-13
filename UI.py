@@ -13,7 +13,7 @@ def render(array, fenetre):
     pygame.display.flip()
 
 pygame.init()
-game = Game(1, 5)
+game = Game(0.3, 5)
 
 agent = load_agent('save_file.json')
 
@@ -37,11 +37,16 @@ while continuer:
     for event in pygame.event.get():
         if event.type == QUIT:
             continuer = 0
-    
+
+    fenetre.fill((0, 0, 0))
     dt = t % frames_per_update
     
     if dt == 0: # Update logic here
         old_jump = game.is_jumping
+        if game.player_status == Status.HIT:
+            fenetre.blit(bullet, (0, 0))
+        elif game.player_status == Status.SHIELD_HIT:
+            fenetre.blit(shieldint, (0, 0))
         
         
         state = game_to_state(game)
@@ -57,8 +62,6 @@ while continuer:
             bullet_list += [(i[0], i[1])]
         for i in game.deadbullets:
             bullet_list += [(i[0], i[1])]
-
-    fenetre.fill((0, 0, 0))
     
     dt = frames_per_update - dt
     
@@ -74,10 +77,7 @@ while continuer:
             render_list += [(to_blit[i], perso_coords)]
             break
 
-    if game.player_status == Status.HIT:
-        fenetre.blit(bullet, (0, 0))
-    elif game.player_status == Status.SHIELD_HIT:
-        fenetre.blit(shieldint, (0, 0))
+
     pygame.time.Clock().tick(60)
     t += 1
 

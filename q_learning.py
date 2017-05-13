@@ -88,10 +88,10 @@ def game_to_state(game):
     return (watched_bullets, shields)
     
 
-MAX_VISION = 5
+MAX_VISION = 3
 
 ## GAME LOOP
-game = Game(1, 10)
+game = Game(0.3, 5)
 q = QLearning(0.3, 0.8, Agent())
 
 hit_nb = [0] * 10
