@@ -29,7 +29,7 @@ class Game:
         """
         :param frequency: bullets apparition frequency 
         :param width: bullet spawn distance
-        :param shields: array with shields' cooldown time (0 : furthest shield)
+        :param shields: array with shields' cooldown time (0 : ext shield)
         """
         if shields is None:
             shields = [6, 3]
@@ -40,8 +40,8 @@ class Game:
         self.deadbullets = []
         self.is_jumping = 0
         self.time = 0
-        self.shields = shields
-        self.shields_cooldown = [i for i in shields] # Need to copy
+        self.shields_cooldown = shields 
+        self.shields = [0 for i in shields] 
         self.player_status = Status.NOTHING
 
     def shoot(self, position, direction):
