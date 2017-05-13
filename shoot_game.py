@@ -32,7 +32,7 @@ class Game:
         :param shields: array with shields' cooldown time ([0] : ext shield)
         """
         if shields is None:
-            shields = [6, 3]
+            shields = [6, 4]
 
         self.probability = probability
         self.width = width

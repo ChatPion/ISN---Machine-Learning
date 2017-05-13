@@ -83,20 +83,22 @@ def bullet_pos(bullets, index):
 
 def game_to_state(game):
     b = game.bullets
-    watched_bullets = (bullet_pos(b, 0), bullet_pos(b, 1), bullet_pos(b, 2), bullet_pos(b, 3))
+    watched_bullets = (bullet_pos(b, 0), bullet_pos(b, 1), bullet_pos(b, 2), bullet_pos(b, 3), bullet_pos(b, 4), bullet_pos(b, 5))
     shields = tuple(game.shields)
     return (watched_bullets, shields)
     
 
-MAX_VISION = 3
+MAX_VISION = 4
 
 ## GAME LOOP
-game = Game(0.3, 5)
+game = Game(0.33, 5)
 q = QLearning(0.3, 0.8, Agent())
 
 hit_nb = [0] * 10
 
-for i in range(10000):
+for i in range(500000):
+    if i % 100000 == 0:
+        print("Step :", i)
 
     state1 = game_to_state(game)
     chosen_action = q.choose_action(state1, False)
@@ -111,24 +113,24 @@ for i in range(10000):
         action = Actions.STAND
         if v == Status.HIT:
             reward += -100
-        else:
+        elif v == Status.DODGED:
             reward += 10
+        elif v == Status.SHIELD_HIT:
+            reward += 1
     q.learn(state1, chosen_action, game_to_state(game), reward)
 
-for i in range(1000):
-    state1 = game_to_state(game)
-    chosen_action = q.choose_action(state1, True)
-    first = True
-
-    action = chosen_action
-    while first or game.is_jumping > 0:
-        first = False
-        game.tick(action)
-        v = game.player_status
-        action = Actions.STAND
-        if v == Status.HIT:
-            hit_nb[i // 1000] += 1
+# for i in range(1000):
+#     state1 = game_to_state(game)
+#     chosen_action = q.choose_action(state1, True)
+#     first = True
+# 
+#     action = chosen_action
+#     while first or game.is_jumping > 0:
+#         first = False
+#         game.tick(action)
+#         v = game.player_status
+#         action = Actions.STAND
+#         if v == Status.HIT:
+#             hit_nb[i // 1000] += 1
     
-print(hit_nb)
-print(q.agent.actions_value)
 save_agent('save_file.json', q.agent)
