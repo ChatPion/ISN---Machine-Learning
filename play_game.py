@@ -15,10 +15,10 @@ pygame.init()
 game = Game(0.2, 5)
 
 fenetre = pygame.display.set_mode((64*(2*game.width + 1), 64*5))
-perso = pygame.image.load("perso3.png").convert_alpha()
-bullet = pygame.image.load("bullet.png").convert_alpha()
-shieldext = pygame.image.load("shieldext.png").convert_alpha()
-shieldint = pygame.image.load("shieldint.png").convert_alpha()
+perso = pygame.image.load("imgs/perso3.png").convert_alpha()
+bullet = pygame.image.load("imgs/bullet.png").convert_alpha()
+shieldext = pygame.image.load("imgs/shieldext.png").convert_alpha()
+shieldint = pygame.image.load("imgs/shieldint.png").convert_alpha()
 to_blit = [shieldext, shieldint]
 
     
