@@ -1,7 +1,7 @@
 import pygame
 from pygame.locals import *
 from shoot_game import Game, Actions, Status
-from q_learning import Agent, load_agent, game_to_state
+from q_learning import Agent, load_agent, game_to_state, train
 
 def render(array, fenetre):
     origin = (320, 256)
@@ -12,10 +12,11 @@ def render(array, fenetre):
     
     pygame.display.flip()
 
-pygame.init()
-game = Game(0.33, 5)
+train('save_file', 1000, 0.33, 5)
 
-agent = load_agent('save_file.json')
+pygame.init()
+
+agent, game = load_agent('save_file.json')
 
 fenetre = pygame.display.set_mode((64*(2*game.width + 1), 320))
 perso = pygame.image.load("imgs/perso3.png").convert_alpha()

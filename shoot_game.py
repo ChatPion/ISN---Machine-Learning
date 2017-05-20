@@ -74,7 +74,7 @@ class Game:
         for i in range(to_delete):
             del self.deadbullets[0]
 
-        return (to_kill > 0)
+        return to_kill
 
     def take_dmg(self):
         if self.is_jumping > 0:
@@ -121,14 +121,14 @@ class Game:
         self.player_status = Status.NOTHING
         self.regen_shields()
 
-        bullet_at_center = self.move_bullets()
+        bullets_at_center = self.move_bullets()
         self.shot_bullets += self.generate_bullets()
         
         if action == Actions.JUMP:
             self.jump()
         self.fall()
 
-        if bullet_at_center:
+        for i in range(bullets_at_center):
             self.take_dmg()
             
         self.time += 1
