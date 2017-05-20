@@ -40,6 +40,8 @@ class Game:
         self.deadbullets = []
         self.is_jumping = 0
         self.time = 0
+        self.shot_bullets = 0
+        self.nb_hit = 0
         self.shields_cooldown = shields 
         self.shields = [0 for i in shields] 
         self.player_status = Status.NOTHING
@@ -86,6 +88,7 @@ class Game:
                 return False
 
         self.player_status = Status.HIT
+        self.nb_hit += 1
         return True
 
     def fall(self):
@@ -99,10 +102,14 @@ class Game:
                 break
 
     def generate_bullets(self):
+        nb = 0
         if rand.uniform(0, 1) < self.probability:
             self.shoot(self.width, -1)
+            nb += 1
         if rand.uniform(0, 1) < self.probability:
             self.shoot(-self.width, 1)
+            nb += 1
+        return nb
 
     def tick(self, action):
         """
@@ -115,7 +122,7 @@ class Game:
         self.regen_shields()
 
         bullet_at_center = self.move_bullets()
-        self.generate_bullets()
+        self.shot_bullets += self.generate_bullets()
         
         if action == Actions.JUMP:
             self.jump()

@@ -91,7 +91,7 @@ def game_to_state(game):
 MAX_VISION = 4
 
 ## GAME LOOP
-game = Game(0.33, 5)
+game = Game(0, 5)
 q = QLearning(0.3, 0.8, Agent())
 
 hit_nb = [0] * 10
