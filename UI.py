@@ -5,25 +5,25 @@ from q_learning import Agent, load_agent, game_to_state, train
 from math import floor
 
 def render(array, fenetre):
-    origin = (320, 256)
     global baseW, baseH
+    origin = (baseW*game.width, baseH*4)
     
     for sprite, coords in array:
-        fenetre.blit(sprite, (origin[0] + coords[0] * baseW, origin[1] + coords[1] * baseH))
+        fenetre.blit(sprite, (origin[0] + coords[0] * baseW, origin[1] - coords[1] * baseH))
     
     pygame.display.flip()
 
 #train('save_file', training_params={'cycle_nb': 200})
 
-baseW, baseH = 64, -64
+baseW, baseH = 64, 64
 pygame.init()
 
 agent, game = load_agent('save_file.json')
 game.probability = 0.33
 
-font = pygame.font.SysFont("arial", 30)
+font = pygame.font.SysFont("arial",  baseH)
 text = font.render("HIT !", True, (255, 0, 0))
-fenetre = pygame.display.set_mode((64*(2*game.width + 1), 320))
+fenetre = pygame.display.set_mode((baseW*(2*game.width + 1), baseH*5))
 perso = pygame.image.load("imgs/perso3.png").convert_alpha()
 bullet = pygame.image.load("imgs/bullet.png").convert_alpha()
 shieldint = pygame.image.load("imgs/shieldint.png").convert_alpha()
@@ -68,9 +68,9 @@ while continuer:
             
 
     if game.player_status == Status.HIT and dt <= ((frames_per_update*2)//3):
-        fenetre.blit(text, ((11 * 64) // 2 - text.get_width()//2, 160 - text.get_height()//2))
+        fenetre.blit(text, (((2*game.width + 1) * baseW) //2 - text.get_width()//2, baseH*2))
 
-    fenetre.blit(disp_hits, ((11*64) - disp_hits.get_width(), 0))
+    fenetre.blit(disp_hits, (((2*game.width + 1)*baseW) - disp_hits.get_width(), 0))
     dt = frames_per_update - dt
     
     render_list = []
@@ -86,7 +86,7 @@ while continuer:
             break
     for i in range(len(game.shields)):
         for j in range(game.shields_cooldown[i] - game.shields[i]):
-            render_list += [(to_blit[2-i], (j - game.width, i))]
+            fenetre.blit(to_blit[2-i], (j*baseW, i*baseH))
     
 
 
