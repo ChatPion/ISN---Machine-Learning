@@ -27,8 +27,9 @@ fenetre = pygame.display.set_mode((64*(2*game.width + 1), 320))
 perso = pygame.image.load("imgs/perso3.png").convert_alpha()
 bullet = pygame.image.load("imgs/bullet.png").convert_alpha()
 shieldint = pygame.image.load("imgs/shieldint.png").convert_alpha()
+shieldext = pygame.image.load("imgs/shieldext.png").convert_alpha()
 shieldboth = pygame.image.load("imgs/shieldboth.png").convert_alpha()
-to_blit = [shieldboth, shieldint]
+to_blit = [shieldboth, shieldint, shieldext]
 
 bullet_list = []
 new_jump = 0
@@ -62,8 +63,8 @@ while continuer:
         for i in game.deadbullets:
             bullet_list += [(i[0], i[1])]
         proportion = (floor(100000*game.nb_hit/game.shot_bullets)/100) if game.shot_bullets > 0 else 0
-        s = str(proportion) + "‰"
-        disp_hits = font.render(s, True, (255, 255, 255))
+        message = str(proportion) + "‰"
+        disp_hits = font.render(message, True, (255, 255, 255))
             
 
     if game.player_status == Status.HIT and dt <= ((frames_per_update*2)//3):
@@ -83,6 +84,10 @@ while continuer:
         if game.shields[i] == 0:
             render_list += [(to_blit[i], perso_coords)]
             break
+    for i in range(len(game.shields)):
+        for j in range(game.shields_cooldown[i] - game.shields[i]):
+            render_list += [(to_blit[2-i], (j - game.width, i))]
+    
 
 
     pygame.time.Clock().tick(60)
