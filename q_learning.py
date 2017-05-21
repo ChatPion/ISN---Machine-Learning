@@ -2,6 +2,7 @@ import random as rand
 from shoot_game import Game, Status, Actions
 import json
 from ast import literal_eval
+from os.path import isfile
 
 
 # state : ((bullet1, bullet2, bullet3, bullet4), (shield1, shield2))
@@ -108,7 +109,6 @@ def game_to_state(game):
 
 MAX_VISION = 5
 
-
 ## GAME LOOP
 def train(file_name, training_params=None, game_params=None, learn_rate=0.3, discount_rate=0.8):
     if training_params is None:
@@ -122,7 +122,12 @@ def train(file_name, training_params=None, game_params=None, learn_rate=0.3, dis
     training_params = {**default_training_params, **training_params}
     game_params = {**default_game_params, **game_params}
 
-    q = QLearning(learn_rate, discount_rate, Agent())
+    agent = Agent()
+    if isfile(file_name + '.json'):
+        agent, _ = load_agent(file_name + '.json')
+        print('Successfully loaded', file_name, '.json')
+
+    q = QLearning(learn_rate, discount_rate, agent)
 
     cycle_nb = training_params['cycle_nb']
     game_duration = training_params['game_duration']
