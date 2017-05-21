@@ -130,8 +130,8 @@ def train(file_name, training_params=None, game_params=None, learn_rate=0.3, dis
     default_training_params = {'cycle_nb': 100, 'game_duration': 100, 'prob_step': 2}
     default_game_params = {'width': 5, 'shields_cd': None}
 
-    training_params = {**default_training_params, **training_params}
-    game_params = {**default_game_params, **game_params}
+    default_training_params.update(training_params)
+    default_game_params.update(game_params)
 
     agent = Agent()
     if isfile(file_name + '.json'):
@@ -141,13 +141,13 @@ def train(file_name, training_params=None, game_params=None, learn_rate=0.3, dis
 
     q = QLearning(learn_rate, discount_rate, agent)
 
-    cycle_nb = training_params['cycle_nb']
-    game_duration = training_params['game_duration']
-    probability_step = training_params['prob_step']
+    cycle_nb = default_training_params['cycle_nb']
+    game_duration = default_training_params['game_duration']
+    probability_step = default_training_params['prob_step']
     cycle_duration = 100 // probability_step
 
-    shields_cd = game_params['shields_cd']
-    width = game_params['width']
+    shields_cd = default_game_params['shields_cd']
+    width = default_game_params['width']
 
     for a in range(cycle_nb):
         probability = 0.0
