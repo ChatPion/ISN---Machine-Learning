@@ -109,8 +109,18 @@ def game_to_state(game):
 
 MAX_VISION = 5
 
+
 ## GAME LOOP
 def train(file_name, training_params=None, game_params=None, learn_rate=0.3, discount_rate=0.8):
+    """
+    
+    :param file_name: 
+    :param training_params: cycle_nb: 100, game_duration: 100, prob_step: 2
+    :param game_params: width: 5, shields_cd: None
+    :param learn_rate: 
+    :param discount_rate: 
+    :return: 
+    """
     if training_params is None:
         training_params = {}
     if game_params is None:
