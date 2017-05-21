@@ -17,10 +17,11 @@ game = Game(0.2, 5)
 fenetre = pygame.display.set_mode((64*(2*game.width + 1), 64*5))
 perso = pygame.image.load("imgs/perso3.png").convert_alpha()
 bullet = pygame.image.load("imgs/bullet.png").convert_alpha()
-shieldext = pygame.image.load("imgs/shieldext.png").convert_alpha()
 shieldint = pygame.image.load("imgs/shieldint.png").convert_alpha()
-to_blit = [shieldext, shieldint]
+shieldboth = pygame.image.load("shieldboth.png").convert_alpha()
+to_blit = [shieldboth, shieldint]
 
+    
 bullet_list = []
 new_jump = 0
 jump_diff = 0
@@ -77,4 +78,4 @@ while continuer:
     t += 1
 
     render(render_list, fenetre)
-print(nb_hit//frames_per_update)
+print(nb_hit//frames_per_update, "/", t//frames_per_update)
