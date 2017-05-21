@@ -2,10 +2,11 @@ import pygame
 from pygame.locals import *
 from shoot_game import Game, Actions, Status
 from q_learning import Agent, load_agent, game_to_state, train
+from math import floor
 
 def render(array, fenetre):
     origin = (320, 256)
-    baseW, baseH = 64, -64
+    global baseW, baseH
     
     for sprite, coords in array:
         fenetre.blit(sprite, (origin[0] + coords[0] * baseW, origin[1] + coords[1] * baseH))
@@ -14,18 +15,20 @@ def render(array, fenetre):
 
 train('save_file', 1000, 0.33, 5)
 
+baseW, baseH = 64, -64
 pygame.init()
 
 agent, game = load_agent('save_file.json')
 
+font = pygame.font.SysFont("arial", 30)
+text = font.render("HIT !", True, (255, 0, 0))
 fenetre = pygame.display.set_mode((64*(2*game.width + 1), 320))
 perso = pygame.image.load("imgs/perso3.png").convert_alpha()
 bullet = pygame.image.load("imgs/bullet.png").convert_alpha()
-shieldext = pygame.image.load("imgs/shieldext.png").convert_alpha()
 shieldint = pygame.image.load("imgs/shieldint.png").convert_alpha()
-to_blit = [shieldext, shieldint]
+shieldboth = pygame.image.load("imgs/shieldboth.png").convert_alpha()
+to_blit = [shieldboth, shieldint]
 
-    
 bullet_list = []
 new_jump = 0
 jump_diff = 0
@@ -57,13 +60,15 @@ while continuer:
             bullet_list += [(i[0], i[1])]
         for i in game.deadbullets:
             bullet_list += [(i[0], i[1])]
+        proportion = (floor(100000*game.nb_hit/game.shot_bullets)/100) if game.shot_bullets > 0 else 0
+        s = str(proportion) + "‰"
+        disp_hits = font.render(s, True, (255, 255, 255))
             
 
-    if game.player_status == Status.HIT:
-        fenetre.blit(bullet, (0, 0))
-    elif game.player_status == Status.SHIELD_HIT:
-        fenetre.blit(shieldint, (0, 0))
-    
+    if game.player_status == Status.HIT and dt <= ((frames_per_update*2)//3):
+        fenetre.blit(text, ((11 * 64) // 2 - text.get_width()//2, 160 - text.get_height()//2))
+
+    fenetre.blit(disp_hits, ((11*64) - disp_hits.get_width(), 0))
     dt = frames_per_update - dt
     
     render_list = []
