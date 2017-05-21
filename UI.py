@@ -64,8 +64,6 @@ while continuer:
         proportion = (floor(100000*game.nb_hit/game.shot_bullets)/100) if game.shot_bullets > 0 else 0
         s = str(proportion) + "‰"
         disp_hits = font.render(s, True, (255, 255, 255))
-
-        print(game.nb_hit)
             
 
     if game.player_status == Status.HIT and dt <= ((frames_per_update*2)//3):
