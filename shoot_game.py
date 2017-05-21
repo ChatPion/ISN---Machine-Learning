@@ -4,9 +4,9 @@
 # puis créer ou pas une balle
 # puis tomber de 1
 # boucliers : vaut 0 quand disponible
+
 from enum import Enum
 import random as rand
-
 
 class Actions(Enum):
     STAND = 0

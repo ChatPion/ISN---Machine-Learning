@@ -21,7 +21,6 @@ shieldext = pygame.image.load("imgs/shieldext.png").convert_alpha()
 shieldint = pygame.image.load("imgs/shieldint.png").convert_alpha()
 to_blit = [shieldext, shieldint]
 
-    
 bullet_list = []
 new_jump = 0
 jump_diff = 0
