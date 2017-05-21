@@ -17,7 +17,6 @@ def save_agent(path, agent, game):
         'data': {str(k): v for k, v in agent.actions_value.items()},
         'options': {
             'width': game.width,
-            'probability': game.probability,
             'shields_cooldown': game.shields_cooldown
         }
     })
@@ -31,7 +30,7 @@ def load_agent(path):
 
     options = data['options']
 
-    probability = float(options['probability'])
+    probability = 0.33
     width = int(options['width'])
     shields_cd = options['shields_cooldown']
 
@@ -111,33 +110,54 @@ MAX_VISION = 5
 
 
 ## GAME LOOP
-def train(file_name, games_nb, probability, width, learn_rate=0.3, discount_rate=0.8):
+def train(file_name, training_params=None, game_params=None, learn_rate=0.3, discount_rate=0.8):
+    if training_params is None:
+        training_params = {}
+    if game_params is None:
+        game_params = {}
+
+    default_training_params = {'cycle_nb': 100, 'game_duration': 100, 'prob_step': 2}
+    default_game_params = {'width': 5, 'shields_cd': None}
+
+    training_params = {**default_training_params, **training_params}
+    game_params = {**default_game_params, **game_params}
+
     q = QLearning(learn_rate, discount_rate, Agent())
 
-    game_duration = 100
+    cycle_nb = training_params['cycle_nb']
+    game_duration = training_params['game_duration']
+    probability_step = training_params['prob_step']
+    cycle_duration = 100 // probability_step
 
-    for a in range(games_nb):
-        game = Game(probability, width)
+    shields_cd = game_params['shields_cd']
+    width = game_params['width']
 
-        for i in range(game_duration):
-            state1 = game_to_state(game)
-            chosen_action = q.choose_action(state1, False)
-            reward = 0
-            first = True
+    for a in range(cycle_nb):
+        probability = 0.0
+        for b in range(cycle_duration):
+            game = Game(probability, width, shields_cd)
 
-            action = chosen_action
-            while first or game.is_jumping > 0:
-                first = False
-                game.tick(action)
-                v = game.player_status
-                action = Actions.STAND
-                if v == Status.HIT:
-                    reward += -100
-                elif v == Status.DODGED:
-                    reward += 10
-                elif v == Status.SHIELD_HIT:
-                    reward += 1
-            q.learn(state1, chosen_action, game_to_state(game), reward)
-        print(a)
+            for i in range(game_duration):
+                state1 = game_to_state(game)
+                chosen_action = q.choose_action(state1, False)
+                reward = 0
+                first = True
+
+                action = chosen_action
+                while first or game.is_jumping > 0:
+                    first = False
+                    game.tick(action)
+                    v = game.player_status
+                    action = Actions.STAND
+                    if v == Status.HIT:
+                        reward += -100
+                    elif v == Status.DODGED:
+                        reward += 10
+                    elif v == Status.SHIELD_HIT:
+                        reward += 1
+                q.learn(state1, chosen_action, game_to_state(game), reward)
+            probability += float(probability_step) / 100.0
+
+        print("Cycle", a+1, 'of', cycle_nb)
 
     save_agent(file_name + ".json", q.agent, game)

@@ -13,12 +13,13 @@ def render(array, fenetre):
     
     pygame.display.flip()
 
-train('save_file', 1000, 0.33, 5)
+train('save_file', training_params={'cycle_nb': 200})
 
 baseW, baseH = 64, -64
 pygame.init()
 
 agent, game = load_agent('save_file.json')
+game.probability = 0.33
 
 font = pygame.font.SysFont("arial", 30)
 text = font.render("HIT !", True, (255, 0, 0))
