@@ -111,9 +111,10 @@ MAX_VISION = 5
 
 
 ## GAME LOOP
-def train(file_name, training_params=None, game_params=None, learn_rate=0.3, discount_rate=0.8):
+def train(file_name, training_params=None, game_params=None, learn_rate=0.3, discount_rate=0.8, show_prints=True):
     """
     
+    :param show_prints: 
     :param file_name: 
     :param training_params: cycle_nb: 100, game_duration: 100, prob_step: 2
     :param game_params: width: 5, shields_cd: None
@@ -135,7 +136,8 @@ def train(file_name, training_params=None, game_params=None, learn_rate=0.3, dis
     agent = Agent()
     if isfile(file_name + '.json'):
         agent, _ = load_agent(file_name + '.json')
-        print('Successfully loaded', file_name, '.json')
+        if show_prints:
+            print('Successfully loaded', file_name, '.json')
 
     q = QLearning(learn_rate, discount_rate, agent)
 
@@ -173,6 +175,7 @@ def train(file_name, training_params=None, game_params=None, learn_rate=0.3, dis
                 q.learn(state1, chosen_action, game_to_state(game), reward)
             probability += float(probability_step) / 100.0
 
-        print("Cycle", a+1, 'of', cycle_nb)
+        if show_prints:
+            print("Cycle", a+1, 'of', cycle_nb)
 
     save_agent(file_name + ".json", q.agent, game)
