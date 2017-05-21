@@ -133,3 +133,13 @@ class Game:
             
         self.time += 1
 
+    def reset(self):
+        self.bullets = []
+        self.deadbullets = []
+        self.is_jumping = 0
+        self.time = 0
+        self.shot_bullets = 0
+        self.nb_hit = 0
+        self.shields = [0 for i in self.shields]
+        self.player_status = Status.NOTHING
+
