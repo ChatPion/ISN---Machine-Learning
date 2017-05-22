@@ -18,7 +18,7 @@ def render(array, fenetre):
 baseW, baseH = 64, 64
 pygame.init()
 
-agent, game = load_agent('save_file.json')
+agent, game = load_agent('save_file')
 game.probability = 0.33
 
 font = pygame.font.SysFont("arial",  baseH)

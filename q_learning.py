@@ -13,7 +13,7 @@ from os.path import isfile
 # TODO : Add simulation parameters in the savefile
 
 def save_agent(path, agent, game):
-    file = open(path, "w")
+    file = open(path + ".json", "w")
     data = json.dumps({
         'data': {str(k): v for k, v in agent.actions_value.items()},
         'options': {
@@ -26,7 +26,7 @@ def save_agent(path, agent, game):
 
 
 def load_agent(path):
-    file = open(path, "r")
+    file = open(path + '.json', "r")
     data = json.loads(file.read())
 
     options = data['options']
@@ -135,7 +135,7 @@ def train(file_name, training_params=None, game_params=None, learn_rate=0.3, dis
 
     agent = Agent()
     if isfile(file_name + '.json'):
-        agent, _ = load_agent(file_name + '.json')
+        agent, _ = load_agent(file_name)
         if show_prints:
             print('Successfully loaded', file_name, '.json')
 
@@ -178,4 +178,4 @@ def train(file_name, training_params=None, game_params=None, learn_rate=0.3, dis
         if show_prints:
             print("Cycle", a+1, 'of', cycle_nb)
 
-    save_agent(file_name + ".json", q.agent, game)
+    save_agent(file_name, q.agent, game)
