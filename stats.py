@@ -12,24 +12,27 @@ def play_game(agent, game, duration):
     for i in range(duration):
         action = agent.choose_best_action(game_to_state(game))
         game.tick(action)
-        if game.player_status == Status.HIT:
-            hit_counter += 1
-    return hit_counter
+    return game.nb_hit / game.shot_bullets if game.shot_bullets > 0 else 0
+
+cycle_nb = 20
+prob_step = 10
 
 print("Training start")
-hits = np.zeros((10, 10))
-for cycle in range(10):
-    train('stats', training_params={'cycle_nb': 20, 'prob_step': 10, 'game_duration': 10}, show_prints=False)
-    agent, game = load_agent('stats')
-    for i in range(10):
+hits = np.zeros((cycle_nb, prob_step))
+agent = Agent()
+game = Game(0, 5)
+for cycle in range(cycle_nb):
+    for i in range(prob_step):
         game.reset()
-        game.probability = float(i) / 10
+        game.probability = float(i) / prob_step
         hits[cycle, i] = play_game(agent, game, 100)
+    train('stats', training_params={'cycle_nb': 5, 'prob_step': 10, 'game_duration': 10}, show_prints=False)
+    agent, game = load_agent('stats')
     print("Cycle", cycle+1)
 
 os.remove('stats.json')
 
-X, Y = np.meshgrid(np.arange(0, 10, 1), np.arange(0, 10, 1))
+X, Y = np.meshgrid(np.arange(0, prob_step, 1), np.arange(0, cycle_nb, 1))
 ax = plt.figure().add_subplot(111, projection="3d")
 ax.plot_surface(X, Y, hits, rstride=1, cstride=1, cmap='hot')
 plt.show()
