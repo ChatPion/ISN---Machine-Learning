@@ -24,7 +24,6 @@ min_hits = np.zeros((cycle_nb, prob_step))
 min_hits.fill(2)
 agent_list = [Agent() for i in range(10)]
 game = Game(0, 5)
-<<<<<<< Updated upstream
 for agent_id in range(len(agent_list)):
     if isfile('stats'+str(agent_id)+'.json'):
         os.remove('stats'+str(agent_id)+'.json')
@@ -40,17 +39,6 @@ for agent_id in range(len(agent_list)):
         train('stats' + str(agent_id), training_params={'cycle_nb': 5, 'prob_step': 10, 'game_duration': 10}, show_prints=False)
         agent, game = load_agent('stats' + str(agent_id))
         print("Cycle", cycle+1)
-=======
-for cycle in range(cycle_nb):
-    for i in range(prob_step):
-        game.reset()
-        # game.probability = float(i) / prob_step
-        game.probability = 0.33
-        hits[cycle, i] = play_game(agent, game, 100)
-    train('stats', training_params={'cycle_nb': 5, 'prob_step': 10, 'game_duration': 10}, show_prints=False)
-    agent, game = load_agent('stats')
-    print("Cycle", cycle+1)
->>>>>>> Stashed changes
 
 hits /= len(agent_list)
 
@@ -58,12 +46,7 @@ X, Y = np.meshgrid(np.arange(0, prob_step, 1), np.arange(0, cycle_nb, 1))
 Xmax, Ymax = np.meshgrid(np.arange(0, prob_step, 1), np.arange(0, cycle_nb, 1))
 Xmin, Ymin = np.meshgrid(np.arange(0, prob_step, 1), np.arange(0, cycle_nb, 1))
 ax = plt.figure().add_subplot(111, projection="3d")
-<<<<<<< Updated upstream
 ax.plot_surface(X, Y, hits, rstride=1, cstride=1, cmap='summer')
 #ax.plot_surface(Xmax, Ymax, max_hits, rstride=1, cstride=1, cmap='hot')
 #ax.plot_surface(Xmin, Ymin, min_hits, rstride=1, cstride=1, cmap='cool')
 plt.show()
-=======
-ax.plot_surface(X, Y, hits, rstride=1, cstride=1, cmap='hot')
-plt.show()
->>>>>>> Stashed changes
