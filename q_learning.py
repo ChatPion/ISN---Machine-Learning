@@ -5,12 +5,14 @@ from ast import literal_eval
 from os.path import isfile
 
 
-# state : ((bullet1, bullet2, bullet3, bullet4), (shield1, shield2))
+# state : ((bullet1, bullet2, bullet3, bullet4, bullet5, bullet6), (shield1, shield2))
 # bullet : [0, 5] (6 : too far)
-# shield1 : [0, 2] (0 : on)
+# shield1 : [0, 6] (0 : on; 1-6 : off)
 # shield2 : [0, 4]
+# keys : ((bullet1, bullet2, bullet3, bullet4, bullet5, bullet6), (shield1, shield2))
+# values : [value of STAND, value of JUMP]
 
-# TODO : Add simulation parameters in the savefile
+# TODO : Add simulation parameters in the savefile <--  Already done, no ?
 
 def save_agent(path, agent, game):
     file = open(path + ".json", "w")
@@ -39,21 +41,21 @@ def load_agent(path):
     learn_data = data['data']
     for k, v in learn_data.items():
         dict[literal_eval(k)] = v
-    return Agent(dict), Game(probability, width, shields_cd)
+    return Agent(dict), Game(probability, width, shields_cd)  # On enlèvera le Game(...) à la fin, ok
 
 
 class Agent:
     def __init__(self, actions_values=None):
         self.actions_value = {}
-        if actions_values is not None:
-            self.actions_value = actions_values
+        if actions_values is not None: 
+            self.actions_value = actions_values #if loading an already trained machine
 
     def get_value(self, state, action=None):
         if state not in self.actions_value:
-            self.actions_value[state] = [0, 0]
+            self.actions_value[state] = [0, 0] # if encountering an unknown state
         ret = self.actions_value[state]
         if action is not None:
-            ret = ret[action.value]
+            ret = ret[action.value] # if wanting the value of STAND xor JUMP
         return ret
 
     def set_value(self, state, action, value):
@@ -87,7 +89,7 @@ class QLearning:
         self.agent.set_value(state_1, action_1, new_val)
 
     def choose_action(self, state, real):
-        if real or rand.uniform(0, 1) < 0.8:  # GREEDY
+        if real or rand.uniform(0, 1) < 0.8:  # GREEDY    We need to turn 0.8 into a parameter so we can make tests.
             return self.agent.choose_best_action(state)
         # exploration
         return self.agent.explore()
@@ -95,33 +97,35 @@ class QLearning:
 
 def bullet_pos(bullets, index):
     if index >= len(bullets):
-        return MAX_VISION
-    return min(abs(bullets[index][0]), MAX_VISION)
+        return MAX_VISION # Isn't it a little strange that if there are only 2 bullets, he thinks 4 more are beyond and coming soon ? But it's not like we have any other choice ...
+    return min(abs(bullets[index][0]), MAX_VISION) # It sees only bullets that are within range of his MAX_VISION
 
 
 def game_to_state(game):
     b = game.bullets
-    watched_bullets = (
-    bullet_pos(b, 0), bullet_pos(b, 1), bullet_pos(b, 2), bullet_pos(b, 3), bullet_pos(b, 4), bullet_pos(b, 5))
+    watched_bullets = tuple(
+    bullet_pos(b, i) for i in range(6)) # Plus we turn 6 into a parameter
     shields = tuple(game.shields)
     return (watched_bullets, shields)
 
 
-MAX_VISION = 5
+MAX_VISION = 5 # We turn 5 into a parameter.
 
 
 ## GAME LOOP
 def train(file_name, training_params=None, game_params=None, learn_rate=0.3, discount_rate=0.8, show_prints=True):
+    # How does this thing work ? vvvvvv
     """
     
     :param show_prints: 
-    :param file_name: 
+    :param file_name:
     :param training_params: cycle_nb: 100, game_duration: 100, prob_step: 2
     :param game_params: width: 5, shields_cd: None
     :param learn_rate: 
     :param discount_rate: 
     :return: 
     """
+    #                         ^^^^^^^^^^
     if training_params is None:
         training_params = {}
     if game_params is None:
@@ -172,6 +176,7 @@ def train(file_name, training_params=None, game_params=None, learn_rate=0.3, dis
                         reward += 10
                     elif v == Status.SHIELD_HIT:
                         reward += 1
+
                 q.learn(state1, chosen_action, game_to_state(game), reward)
             probability += float(probability_step) / 100.0
 
