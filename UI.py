@@ -24,8 +24,8 @@ game.probability = 0.33
 font = pygame.font.SysFont("arial",  baseH)
 text = font.render("HIT !", True, (255, 0, 0))
 fenetre = pygame.display.set_mode((baseW*(2*game.width + 1), baseH*5))
-perso = pygame.image.load("imgs/perso3.png").convert_alpha()
-bullet = pygame.image.load("imgs/bullet.png").convert_alpha()
+perso = pygame.image.load("imgs/frog.png").convert_alpha()
+bullet = pygame.image.load("imgs/fireball.png").convert_alpha()
 shieldint = pygame.image.load("imgs/shieldint.png").convert_alpha()
 shieldext = pygame.image.load("imgs/shieldext.png").convert_alpha()
 shieldboth = pygame.image.load("imgs/shieldboth.png").convert_alpha()
@@ -36,7 +36,7 @@ new_jump = 0
 jump_diff = 0
 t = 0
 
-frames_per_update = 7
+frames_per_update = 15
 
 continuer = 1
 while continuer:
