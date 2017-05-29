@@ -36,7 +36,7 @@ new_jump = 0
 jump_diff = 0
 t = 0
 
-frames_per_update = 15
+frames_per_update = 7
 
 continuer = 1
 while continuer:

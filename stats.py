@@ -7,6 +7,9 @@ from os.path import isfile
 import os
 
 
+plt.xkcd()
+
+
 def play_game(agent, game, duration):
     hit_counter = 0
     for i in range(duration):

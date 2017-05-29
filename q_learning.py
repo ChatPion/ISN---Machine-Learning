@@ -12,7 +12,6 @@ from os.path import isfile
 # keys : ((bullet1, bullet2, bullet3, bullet4, bullet5, bullet6), (shield1, shield2))
 # values : [value of STAND, value of JUMP]
 
-# TODO : Add simulation parameters in the savefile <--  Already done, no ?
 
 def save_agent(path, agent, game):
     file = open(path + ".json", "w")
@@ -41,7 +40,7 @@ def load_agent(path):
     learn_data = data['data']
     for k, v in learn_data.items():
         dict[literal_eval(k)] = v
-    return Agent(dict), Game(probability, width, shields_cd)  # On enlèvera le Game(...) à la fin, ok
+    return Agent(dict), Game(probability, width, shields_cd)
 
 
 class Agent:
@@ -55,7 +54,7 @@ class Agent:
             self.actions_value[state] = [0, 0] # if encountering an unknown state
         ret = self.actions_value[state]
         if action is not None:
-            ret = ret[action.value] # if wanting the value of STAND xor JUMP
+            ret = ret[action.value] # if wanting the value of STAND or JUMP
         return ret
 
     def set_value(self, state, action, value):
@@ -73,48 +72,82 @@ class Agent:
 
 
 class QLearning:
-    def __init__(self, alpha, gamma, agent):
+    def __init__(self, alpha, gamma, agent, epsilon):
         """
         alpha: learning rate
-        gamme: discount rate
+        gamma: discount rate
+        epsilon: exploration rate [0; 1]
         """
         self.alpha = alpha
         self.gamma = gamma
         self.agent = agent
+        self.epsilon = epsilon
 
-    def learn(self, state_1, action_1, state_2, reward):
+    def learn(self, state_1, action_1, state_2, reward):  # Apply Q Learning formula
         current = self.agent.get_value(state_1, action_1)
         max_t2_val = max(self.agent.get_value(state_2))
         new_val = current + self.alpha * (reward + self.gamma * max_t2_val - current)
         self.agent.set_value(state_1, action_1, new_val)
 
     def choose_action(self, state, real):
-        if real or rand.uniform(0, 1) < 0.8:  # GREEDY    We need to turn 0.8 into a parameter so we can make tests.
-            return self.agent.choose_best_action(state)
-        # exploration
-        return self.agent.explore()
+        if real or rand.uniform(0, 1) < self.epsilon:
+            return self.agent.choose_best_action(state) # Greedy
+        return self.agent.explore() # Exploration
 
 
 def bullet_pos(bullets, index):
     if index >= len(bullets):
-        return MAX_VISION # Isn't it a little strange that if there are only 2 bullets, he thinks 4 more are beyond and coming soon ? But it's not like we have any other choice ...
+        return MAX_VISION # If there are less than 6 bullets, it thinks the others are out of range.
     return min(abs(bullets[index][0]), MAX_VISION) # It sees only bullets that are within range of his MAX_VISION
 
 
-def game_to_state(game):
+def game_to_state(game): # Returns a tuple describing the game at the current state
     b = game.bullets
-    watched_bullets = tuple(
-    bullet_pos(b, i) for i in range(6)) # Plus we turn 6 into a parameter
+    watched_bullets = tuple(bullet_pos(b, i) for i in range(6)) # It sees the 6 nearest bullets
     shields = tuple(game.shields)
     return (watched_bullets, shields)
 
 
-MAX_VISION = 5 # We turn 5 into a parameter.
+MAX_VISION = 5
+
+def set_parameters(training_params, game_params):
+    if training_params is None:
+        training_params = {}
+    if game_params is None:
+        game_params = {}
+    
+    default_training_params = {'cycle_nb': 100, 'game_duration': 100, 'prob_step': 2}
+    default_game_params = {'width': 5, 'shields_cd': None}
+    
+    default_training_params.update(training_params)
+    default_game_params.update(game_params)
+    
+    return default_training_params, default_game_params
 
 
-## GAME LOOP
+def tick_and_learn(game, q):
+    state1 = game_to_state(game)
+    chosen_action = q.choose_action(state1, False)
+    reward = 0
+    first = True
+                
+    action = chosen_action
+    while first or game.is_jumping > 0: # Ticks until the end of the chosen action (1 tick if STAND, 2 ticks if JUMP)
+        first = False
+        game.tick(action)
+        v = game.player_status
+        action = Actions.STAND # Default action
+        if v == Status.HIT:
+            reward += -100
+        elif v == Status.DODGED:
+            reward += 10
+        elif v == Status.SHIELD_HIT:
+            reward += 1
+            
+    q.learn(state1, chosen_action, game_to_state(game), reward)
+
+
 def train(file_name, training_params=None, game_params=None, learn_rate=0.3, discount_rate=0.8, show_prints=True):
-    # How does this thing work ? vvvvvv
     """
     
     :param show_prints: 
@@ -125,60 +158,34 @@ def train(file_name, training_params=None, game_params=None, learn_rate=0.3, dis
     :param discount_rate: 
     :return: 
     """
-    #                         ^^^^^^^^^^
-    if training_params is None:
-        training_params = {}
-    if game_params is None:
-        game_params = {}
+    
+    training_params, game_params = set_parameters(training_params, game_params)
 
-    default_training_params = {'cycle_nb': 100, 'game_duration': 100, 'prob_step': 2}
-    default_game_params = {'width': 5, 'shields_cd': None}
-
-    default_training_params.update(training_params)
-    default_game_params.update(game_params)
-
-    agent = Agent()
-    if isfile(file_name + '.json'):
+    agent = Agent() # Creates new agent
+    if isfile(file_name + '.json'): # Loads agent if exists
         agent, _ = load_agent(file_name)
         if show_prints:
             print('Successfully loaded', file_name, '.json')
 
-    q = QLearning(learn_rate, discount_rate, agent)
 
-    cycle_nb = default_training_params['cycle_nb']
-    game_duration = default_training_params['game_duration']
-    probability_step = default_training_params['prob_step']
-    cycle_duration = 100 // probability_step
+    q = QLearning(learn_rate, discount_rate, agent, 0.8)
 
-    shields_cd = default_game_params['shields_cd']
-    width = default_game_params['width']
+    cycle_nb = training_params['cycle_nb']
+    game_duration = training_params['game_duration']
+    probability_step = training_params['prob_step']
 
-    for a in range(cycle_nb):
-        probability = 0.0
-        for b in range(cycle_duration):
+    shields_cd = game_params['shields_cd']
+    width = game_params['width']
+
+    # Cycle : training for all probabilities [0, 1]
+    # Training : plays the game during "game_duration" ticks
+    for a in range(cycle_nb): 
+        for p in range(0, 100 + probability_step, probability_step):
+            probability = p/100
             game = Game(probability, width, shields_cd)
 
             for i in range(game_duration):
-                state1 = game_to_state(game)
-                chosen_action = q.choose_action(state1, False)
-                reward = 0
-                first = True
-
-                action = chosen_action
-                while first or game.is_jumping > 0:
-                    first = False
-                    game.tick(action)
-                    v = game.player_status
-                    action = Actions.STAND
-                    if v == Status.HIT:
-                        reward += -100
-                    elif v == Status.DODGED:
-                        reward += 10
-                    elif v == Status.SHIELD_HIT:
-                        reward += 1
-
-                q.learn(state1, chosen_action, game_to_state(game), reward)
-            probability += float(probability_step) / 100.0
+                tick_and_learn(game, q)
 
         if show_prints:
             print("Cycle", a+1, 'of', cycle_nb)
