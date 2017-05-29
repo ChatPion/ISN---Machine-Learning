@@ -103,7 +103,7 @@ def bullet_pos(bullets, index):
 
 def game_to_state(game): # Returns a tuple describing the game at the current state
     b = game.bullets
-    watched_bullets = tuple(bullet_pos(b, i) for i in range(6)) # It sees the 6 nearest bullets
+    watched_bullets = tuple(bullet_pos(b, i) for i in range(8)) # It sees the 6 nearest bullets
     shields = tuple(game.shields)
     return (watched_bullets, shields)
 

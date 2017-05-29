@@ -51,7 +51,7 @@ while continuer:
         old_jump = game.is_jumping
         state = game_to_state(game)
         chosen_action = agent.choose_best_action(state)
-        
+ #       chosen_action = Actions.JUMP
         game.tick(chosen_action)
         new_jump = game.is_jumping
         
@@ -85,7 +85,7 @@ while continuer:
             render_list += [(to_blit[i], perso_coords)]
             break
     for i in range(len(game.shields)):
-        for j in range(game.shields_cooldown[i] - game.shields[i]):
+        for j in range(game.shields[i]):
             fenetre.blit(to_blit[2-i], (j*baseW, i*baseH))
     
 
