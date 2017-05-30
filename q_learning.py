@@ -147,11 +147,12 @@ def tick_and_learn(game, q):
     q.learn(state1, chosen_action, game_to_state(game), reward)
 
 
-def train(file_name=None, training_params=None, game_params=None, learn_rate=0.3, discount_rate=0.8, show_prints=True, save_to_file = True):
+def train(agent=None, save_file=None, training_params=None, game_params=None, learn_rate=0.3, discount_rate=0.8, show_prints=True):
     """
     
+    :param save_file: string : name of the save file
+    :param agent: 
     :param show_prints: 
-    :param file_name:
     :param training_params: cycle_nb: 100, game_duration: 100, prob_step: 2
     :param game_params: width: 5, shields_cd: None
     :param learn_rate: 
@@ -161,12 +162,8 @@ def train(file_name=None, training_params=None, game_params=None, learn_rate=0.3
     
     training_params, game_params = set_parameters(training_params, game_params)
 
-    agent = Agent() # Creates new agent
-    if isfile(file_name + '.json'): # Loads agent if exists
-        agent, _ = load_agent(file_name)
-        if show_prints:
-            print('Successfully loaded', file_name, '.json')
-
+    if agent is None:
+        agent = Agent()
 
     q = QLearning(learn_rate, discount_rate, agent, 0.8)
 
@@ -190,6 +187,6 @@ def train(file_name=None, training_params=None, game_params=None, learn_rate=0.3
         if show_prints:
             print("Cycle", a+1, 'of', cycle_nb)
 
-    if save_to_file:
-        save_agent(file_name, q.agent, game)
+    if save_file is not None:
+        save_agent(save_file, q.agent, game)
     return q.agent

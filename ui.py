@@ -4,6 +4,7 @@ from shoot_game import Game, Actions, Status
 from q_learning import Agent, load_agent, game_to_state, train
 from math import floor
 
+
 def render(array, fenetre):
     global baseW, baseH
     origin = (baseW*game.width, baseH*4)
@@ -13,12 +14,13 @@ def render(array, fenetre):
     
     pygame.display.flip()
 
-train('save_file', training_params={'cycle_nb': 200})
+agent, game = load_agent('save_file')
+
+agent = train(agent, save_file='save_file', training_params={'cycle_nb': 200})
 
 baseW, baseH = 64, 64
 pygame.init()
 
-agent, game = load_agent('save_file')
 game.probability = 0.33
 
 font = pygame.font.SysFont("arial",  baseH)

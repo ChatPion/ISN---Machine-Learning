@@ -39,7 +39,7 @@ for agent_id in range(len(agent_list)):
             hits[cycle, i] += nb_hits
             max_hits[cycle, i] = max(max_hits[cycle, i], nb_hits)
             min_hits[cycle, i] = min(min_hits[cycle, i], nb_hits)
-        train('stats' + str(agent_id), training_params={'cycle_nb': 5, 'prob_step': 10, 'game_duration': 10}, show_prints=False)
+        train(training_params={'cycle_nb': 5, 'prob_step': 10, 'game_duration': 10}, show_prints=False)
         agent, game = load_agent('stats' + str(agent_id))
         print("Cycle", cycle+1)
 

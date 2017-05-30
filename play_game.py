@@ -2,6 +2,7 @@ import pygame
 from pygame.locals import *
 from shoot_game import Game, Actions, Status
 
+
 def render(array, fenetre):
     origin = (320, 256)
     baseW, baseH = 64, -64
