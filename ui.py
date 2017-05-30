@@ -30,39 +30,52 @@ class UI:
 
         self.game = game
 
-    def render(self, array, fenetre):
-        fenetre.fill((0, 0, 0))
-
+    def render(self, array):
         origin = (self.baseW * self.game.width, self.baseH * 4)
 
         for sprite, coords in array:
-            fenetre.blit(sprite, (origin[0] + coords[0] * self.baseW, origin[1] - coords[1] * self.baseH))
+            self.fenetre.blit(sprite, (origin[0] + coords[0] * self.baseW, origin[1] - coords[1] * self.baseH))
 
         pygame.display.flip()
 
-    def prepare_rendering(self, frames_per_update, dt):
+    def render_ui(self, dt, frames_per_update):
+        # Hit message
         if self.game.player_status == Status.HIT and dt <= ((frames_per_update * 2) // 3):
             self.fenetre.blit(self.text, (((2 * self.game.width + 1) * self.baseW) // 2 - self.text.get_width() // 2, self.baseH * 2))
 
+        # Hit proportion
         self.fenetre.blit(self.disp_hits, (((2 * self.game.width + 1) * self.baseW) - self.disp_hits.get_width(), 0))
-        dt = frames_per_update - dt
 
-        render_list = []
-        for x, dir in self.bullet_list:
-            render_list += [(self.bullet, (x - dir * dt / frames_per_update, 0))]  # (x - dir / (dt + 1), 0))]
-
-        perso_coords = (0, self.new_jump - self.jump_diff * dt / frames_per_update)  # jump_diff / (dt + 1))
-
-        render_list += [(self.perso, perso_coords)]
-        for i in range(len(self.game.shields)):
-            if self.game.shields[i] == 0:
-                render_list += [(self.to_blit[i], perso_coords)]
-                break
+        # Shields reloading
         for i in range(len(self.game.shields)):
             for j in range(self.game.shields[i]):
                 self.fenetre.blit(self.to_blit[2 - i], (j * self.baseW, i * self.baseH))
 
-        self.render(render_list, self.fenetre)
+    def prepare_rendering(self, frames_per_update, dt):
+        render_list = []
+
+        dt = self.method_name(dt, frames_per_update)
+
+        # Bullets
+        for x, dir in self.bullet_list:
+            render_list += [(self.bullet, (x - dir * dt / frames_per_update, 0))]  # (x - dir / (dt + 1), 0))]
+
+        # Frog
+        perso_coords = (0, self.new_jump - self.jump_diff * dt / frames_per_update)  # jump_diff / (dt + 1))
+        render_list += [(self.perso, perso_coords)]
+
+        # Shields
+        for i in range(len(self.game.shields)):
+            if self.game.shields[i] == 0:
+                render_list += [(self.to_blit[i], perso_coords)]
+                break
+
+        self.render_ui(dt, frames_per_update)
+        self.render(render_list)
+
+    def method_name(self, dt, frames_per_update):
+        dt = frames_per_update - dt
+        return dt
 
     def update(self, choose_action):
         old_jump = self.game.is_jumping
@@ -71,9 +84,8 @@ class UI:
         chosen_action = choose_action(state)
         self.game.tick(chosen_action)
 
-        new_jump = self.game.is_jumping
-
-        self.jump_diff = new_jump - old_jump
+        self.new_jump = self.game.is_jumping
+        self.jump_diff = self.new_jump - old_jump
 
         self.bullet_list = []
         for i in self.game.bullets:
@@ -101,6 +113,8 @@ def start_simulation(choose_action, frames_per_update = 15, game=Game(0.33, 5)):
         for event in pygame.event.get():
             if event.type == QUIT:
                 continuer = 0
+
+        game_ui.fenetre.fill((0, 0, 0))
 
         dt = t % frames_per_update
 
