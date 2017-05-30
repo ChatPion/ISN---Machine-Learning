@@ -58,10 +58,10 @@ class UI:
 
         # Bullets
         for x, dir in self.bullet_list:
-            render_list += [(self.bullet, (x - dir * dt / frames_per_update, 0))]  # (x - dir / (dt + 1), 0))]
+            render_list += [(self.bullet, (x - dir * dt / frames_per_update, 0))]
 
         # Frog
-        perso_coords = (0, self.new_jump - self.jump_diff * dt / frames_per_update)  # jump_diff / (dt + 1))
+        perso_coords = (0, self.new_jump - self.jump_diff * dt / frames_per_update)
         render_list += [(self.perso, perso_coords)]
 
         # Shields
@@ -98,7 +98,7 @@ class UI:
         self.disp_hits = self.font.render(message, True, (255, 255, 255))
 
 
-def start_simulation(choose_action, frames_per_update = 15, game=Game(0.33, 5)):
+def start_simulation(choose_action, frames_per_update = 10, game=Game(0.33, 5)):
     """
     
     :param choose_action: function, takes one parameter state, returns an Actions 
@@ -118,7 +118,7 @@ def start_simulation(choose_action, frames_per_update = 15, game=Game(0.33, 5)):
 
         dt = t % frames_per_update
 
-        if dt == 0: # Update logic here
+        if dt == 0:
             game_ui.update(choose_action)
 
         game_ui.prepare_rendering(frames_per_update, dt)

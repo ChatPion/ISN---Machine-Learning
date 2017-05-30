@@ -6,8 +6,8 @@ if agent_exists('save_file'):
 else:
     agent = Agent()
 
-want_to_train = bool(input('Train ? '))
-if want_to_train:
+want_to_train = input('Train ? (True/False) ')
+if want_to_train == str(True):
     agent = train(agent, 'save_file')
 
 def choose_action(state):
