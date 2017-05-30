@@ -150,13 +150,13 @@ def tick_and_learn(game, q):
 def train(agent=None, save_file=None, training_params=None, game_params=None, learn_rate=0.3, discount_rate=0.8, show_prints=True):
     """
     
+    :param agent: agent to train
     :param save_file: string : name of the save file
-    :param agent: 
-    :param show_prints: 
     :param training_params: cycle_nb: 100, game_duration: 100, prob_step: 2
     :param game_params: width: 5, shields_cd: None
     :param learn_rate: 
-    :param discount_rate: 
+    :param discount_rate:
+    :param show_prints: 
     :return: 
     """
     

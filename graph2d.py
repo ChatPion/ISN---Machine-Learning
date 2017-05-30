@@ -12,8 +12,8 @@ def play_game(agent, game, duration):
         game.tick(action)
     return game.nb_hit / game.shot_bullets if game.shot_bullets > 0 else 0
 
-cycle_nb = 100
-agents_nb = 50
+cycle_nb = 20
+agents_nb = 30
 probability = float(input("probability ?"))
 
 hits = np.zeros((cycle_nb, agents_nb))
@@ -28,10 +28,10 @@ for agent_id in range(agents_nb):
         game.reset()
         hits[cycle, agent_id] = play_game(agent, game, 200)
 
-        agent =  train('stats2d' + str(agent_id), training_params={'cycle_nb': 1, 'prob_step': 10, 'game_duration': 10}, show_prints=False, save_to_file = False)
+        agent =  train(agent = agent, training_params={'cycle_nb': 50, 'prob_step': 10, 'game_duration': 10}, show_prints=False)
         # agent, game = load_agent('stats2d' + str(agent_id))
         
-        print("Cycle", cycle+1)
+    print("Agent", agent_id+1)
 
 plt.plot([np.mean(hits[i]) for i in range(cycle_nb)], "r-")
 ##for i in range(cycle_nb):
