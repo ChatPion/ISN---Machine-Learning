@@ -14,7 +14,7 @@ from os.path import isfile
 
 
 def save_agent(path, agent, game):
-    file = open(path + ".json", "w")
+    file = open("saves/" + path + ".json", "w")
     data = json.dumps({
         'data': {str(k): v for k, v in agent.actions_value.items()},
         'options': {
@@ -27,7 +27,7 @@ def save_agent(path, agent, game):
 
 
 def load_agent(path):
-    file = open(path + '.json', "r")
+    file = open("saves/" + path + '.json', "r")
     data = json.loads(file.read())
 
     options = data['options']
