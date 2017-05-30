@@ -27,7 +27,7 @@ def load_test(path, agent_list):
 
     for i in range(agents_nb):
         dic = {}
-        load_data = data["data"+str(i)]
+        load_data = data[i]
         for k, v in load_data.items():
             dic[literal_eval(k)] = v
         agent_list[i].actions_value = dic
@@ -52,7 +52,9 @@ def test(agents_nb, steps_nb = 10, probability = 0.33, test_duration = 50, train
         print("Agent", agent_id+1)
 
     file = open ("saves/stat2d"+str(agents_nb)+".json", "w")
-    
+    data = {}
+    for i in range(agents_nb):
+        data[i] = {str(k): v for k,v in agent_list[i].actions_value.items()}
     to_write = json.dumps({
 
         'data'+str(i): {str(k): v for k,v in agent_list[i].actions_value.items()} for i in range(agents_nb)
@@ -60,7 +62,7 @@ def test(agents_nb, steps_nb = 10, probability = 0.33, test_duration = 50, train
     file.write(to_write)
     file.close()
 
-    return hits
+    return hits, steps_nb
 
 
 def show_plot(array, rows):
@@ -70,5 +72,5 @@ def show_plot(array, rows):
     plt.plot([np.std(array[row]) for row in range (rows)], "b-")
     plt.show()
 
-values = test(15)
+values, steps_nb = test(5)
 show_plot(values, steps_nb)
