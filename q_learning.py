@@ -147,7 +147,7 @@ def tick_and_learn(game, q):
     q.learn(state1, chosen_action, game_to_state(game), reward)
 
 
-def train(file_name, training_params=None, game_params=None, learn_rate=0.3, discount_rate=0.8, show_prints=True):
+def train(file_name=None, training_params=None, game_params=None, learn_rate=0.3, discount_rate=0.8, show_prints=True, save_to_file = True):
     """
     
     :param show_prints: 
@@ -190,4 +190,6 @@ def train(file_name, training_params=None, game_params=None, learn_rate=0.3, dis
         if show_prints:
             print("Cycle", a+1, 'of', cycle_nb)
 
-    save_agent(file_name, q.agent, game)
+    if save_to_file:
+        save_agent(file_name, q.agent, game)
+    return q.agent

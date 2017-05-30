@@ -12,8 +12,8 @@ def play_game(agent, game, duration):
         game.tick(action)
     return game.nb_hit / game.shot_bullets if game.shot_bullets > 0 else 0
 
-cycle_nb = 30
-agents_nb = 20
+cycle_nb = 100
+agents_nb = 50
 probability = float(input("probability ?"))
 
 hits = np.zeros((cycle_nb, agents_nb))
@@ -26,12 +26,15 @@ for agent_id in range(agents_nb):
     agent = agent_list[agent_id]
     for cycle in range(cycle_nb):
         game.reset()
-        hits[cycle, agent_id] = play_game(agent, game, 100)
+        hits[cycle, agent_id] = play_game(agent, game, 200)
 
-        train('stats2d' + str(agent_id), training_params={'cycle_nb': 1, 'prob_step': 2, 'game_duration': 100}, show_prints=False)
-        agent, game = load_agent('stats2d' + str(agent_id))
+        agent =  train('stats2d' + str(agent_id), training_params={'cycle_nb': 1, 'prob_step': 10, 'game_duration': 10}, show_prints=False, save_to_file = False)
+        # agent, game = load_agent('stats2d' + str(agent_id))
+        
         print("Cycle", cycle+1)
 
 plt.plot([np.mean(hits[i]) for i in range(cycle_nb)], "r-")
-for i in range(cycle_nb):
-    plt.plot([i, i], [np.mean(hits[i]) - np.std(hits[i]), np.mean(hits[i]) + np.std(hits[i])], "b-", linewidth = 1.0)
+##for i in range(cycle_nb):
+##    plt.plot([i, i], [np.mean(hits[i]) - np.std(hits[i]), np.mean(hits[i]) + np.std(hits[i])], "b-", linewidth = 1.0)
+plt.plot([np.std(hits[i]) for i in range (cycle_nb)], "b-")
+plt.show()

@@ -1,9 +1,10 @@
 # Règles :
 # d'abord sauter/rien faire
 # puis avancée des tirs
-# puis créer ou pas une balle
+# puis créer ou pas une balle (de chaque côté)
 # puis tomber de 1
-# boucliers : vaut 0 quand disponible
+
+# boucliers : vaut temps de rechargement (0 si disponible)
 
 from enum import Enum
 import random as rand
@@ -20,14 +21,9 @@ class Status(Enum):
 
 class Game:
 
-    STAND = 0
-    JUMP = 1
-    HIT = 2
-    UNHARMED = 3
-
     def __init__(self, probability, width, shields=None):
         """
-        :param probability: bullets apparition probability in ]0; 1]
+        :param probability: bullets apparition probability in [0; 1]
         :param width: bullet spawn distance
         :param shields: array with shields' cooldown time ([0] : ext shield)
         """
