@@ -70,7 +70,7 @@ def test(agents_nb, steps_nb = 10, probability = 0.33, test_duration = 50, train
     file.write(to_write)
     file.close()
 
-    return hits
+    return hits, steps_nb
 
 
 def show_plot(array, rows):
@@ -80,5 +80,5 @@ def show_plot(array, rows):
     plt.plot([np.std(array[row]) for row in range (rows)], "b-")
     plt.show()
 
-values = test(15)
+values, steps_nb = test(15)
 show_plot(values, steps_nb)
