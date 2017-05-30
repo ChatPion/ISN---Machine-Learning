@@ -94,8 +94,8 @@ class QLearning:
         new_val = current + self.alpha * (reward + self.gamma * max_t2_val - current)
         self.agent.set_value(state_1, action_1, new_val)
 
-    def choose_action(self, state, real):
-        if real or rand.uniform(0, 1) < self.epsilon:
+    def apply_policy(self, state):
+        if rand.uniform(0, 1) < self.epsilon:
             return self.agent.choose_best_action(state) # Politique Greedy
         return self.agent.explore() # Politique d'exploration
 
@@ -132,7 +132,7 @@ def set_parameters(training_params, game_params):
 
 def tick_and_learn(game, q):
     state1 = game_to_state(game)
-    chosen_action = q.choose_action(state1, False)
+    chosen_action = q.apply_policy(state1)
     reward = 0
     first = True
                 
