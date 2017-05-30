@@ -11,7 +11,6 @@ plt.xkcd()
 
 
 def play_game(agent, game, duration):
-    hit_counter = 0
     for i in range(duration):
         action = agent.choose_best_action(game_to_state(game))
         game.tick(action)
