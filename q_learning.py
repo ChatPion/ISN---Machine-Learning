@@ -5,12 +5,12 @@ from ast import literal_eval
 from os.path import isfile
 
 
-# state : ((bullet1, bullet2, bullet3, bullet4, bullet5, bullet6), (shield1, shield2))
-# bullet : [0, MAXVISION]
+# state : ((bullet1, bullet2, bullet3, bullet4, bullet5, bullet6, bullet7, bullet8), (shield1, shield2))
+# bullet : [0, MAX_VISION]
 # shield1 : [0, 6] (0 : on; 1-6 : off)
 # shield2 : [0, 4]
 
-# keys : ((bullet1, bullet2, bullet3, bullet4, bullet5, bullet6), (shield1, shield2))
+# keys : ((bullet1, bullet2, bullet3, bullet4, bullet5, bullet6, bullet7, bullet8), (shield1, shield2))
 # values : [value of STAND, value of JUMP]
 
 
@@ -96,19 +96,19 @@ class QLearning:
 
     def choose_action(self, state, real):
         if real or rand.uniform(0, 1) < self.epsilon:
-            return self.agent.choose_best_action(state) # Greedy
-        return self.agent.explore() # Exploration
+            return self.agent.choose_best_action(state) # Politique Greedy
+        return self.agent.explore() # Politique d'exploration
 
 
 def bullet_pos(bullets, index):
     if index >= len(bullets):
-        return MAX_VISION # If there are less than 6 bullets, it thinks the others are out of range.
-    return min(abs(bullets[index][0]), MAX_VISION) # It sees only bullets that are within range of his MAX_VISION
+        return MAX_VISION # S'il y a moins que 8 balles, il fait comme si d'autres étaient trop loin pour sa vision.
+    return min(abs(bullets[index][0]), MAX_VISION) # Il ne voit que les balles situées dans [-MAX_VISION, MAX_VISION]
 
 
-def game_to_state(game): # Returns a tuple describing the game at the current state
+def game_to_state(game): # Renvoie un tuple décrivant la partie à l'instant présent
     b = game.bullets
-    watched_bullets = tuple(bullet_pos(b, i) for i in range(8)) # It sees the 6 nearest bullets
+    watched_bullets = tuple(bullet_pos(b, i) for i in range(8)) # Le joueur voit les 8 balles les plus proches
     shields = tuple(game.shields)
     return (watched_bullets, shields)
 
@@ -124,8 +124,8 @@ def set_parameters(training_params, game_params):
     default_training_params = {'cycle_nb': 100, 'game_duration': 100, 'prob_step': 2}
     default_game_params = {'width': 5, 'shields_cd': None}
     
-    default_training_params.update(training_params)
-    default_game_params.update(game_params)
+    default_training_params.update(training_params) # Fusionne les deux bibliothèques en utilisant les valeurs de training_params lorsqu'il y a un conflit
+    default_game_params.update(game_params) # Idem avec game_params
     
     return default_training_params, default_game_params
 
@@ -137,7 +137,7 @@ def tick_and_learn(game, q):
     first = True
                 
     action = chosen_action
-    while first or game.is_jumping > 0: # Tick jusqu'à la fin de l'action choisie (1 tick si STAND, 2 ticks si JUMP)
+    while first or game.is_jumping > 0: # Tick jusqu'à la fin de l'action choisie (1 tick si STAND, 3 ticks si JUMP)
         first = False
         game.tick(action)
         s = game.player_status
@@ -179,8 +179,8 @@ def train(agent=None, save_file=None, training_params=None, game_params=None, le
     shields_cd = game_params['shields_cd']
     width = game_params['width']
 
-    # Cycle : training for all probabilities [0, 1]
-    # Training : plays the game during "game_duration" ticks
+    # Cycle : entraînement balayant les probabilités de 0 à 1
+    # Pour chaque probabilité, il joue pendant "game_duration" ticks
     for a in range(cycle_nb): 
         for p in range(0, 100 + probability_step, probability_step):
             probability = p/100
@@ -194,4 +194,5 @@ def train(agent=None, save_file=None, training_params=None, game_params=None, le
 
     if save_file is not None:
         save_agent(save_file, q.agent, game)
+
     return q.agent
