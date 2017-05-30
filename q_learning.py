@@ -14,6 +14,10 @@ from os.path import isfile
 # values : [value of STAND, value of JUMP]
 
 
+def agent_exists(path):
+    return isfile('saves/' + path + '.json')
+
+
 def save_agent(path, agent, game):
     file = open("saves/" + path + ".json", "w")
     data = json.dumps({
