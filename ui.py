@@ -125,11 +125,3 @@ def start_simulation(choose_action, frames_per_update = 15, game=Game(0.33, 5)):
 
         pygame.time.Clock().tick(60)
         t += 1
-
-agent, _ = load_agent('save_file')
-
-def choose_action(state):
-    global agent
-    return agent.choose_best_action(state)
-
-start_simulation(choose_action)
