@@ -144,6 +144,8 @@ def tick_and_learn(game, q):
         action = Actions.STAND #Action par défaut, elle n'est pas appliquée car le joueur est en l'air
         if s == Status.HIT:
             reward += -100
+        elif s == Status.DOUBLE_HIT:
+            reward += -200
         elif s == Status.DODGED:
             reward += 10
         elif s == Status.SHIELD_HIT:

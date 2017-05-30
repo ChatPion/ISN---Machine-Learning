@@ -18,8 +18,9 @@ class Actions(Enum):
 class Status(Enum):
     NOTHING = 0
     HIT = 1
-    SHIELD_HIT = 2
-    DODGED = 3 # Si le joueur est en l'air avec une balle en dessous.
+    DOUBLE_HIT = 2
+    SHIELD_HIT = 3
+    DODGED = 4 # Si le joueur est en l'air avec une balle en dessous.
 
 class Game:
 
@@ -77,6 +78,10 @@ class Game:
         """
         :return: True if hit without a shield, False if other
         """
+        if self.player_status == Status.HIT:
+            self.player_status = Status.DOUBLE_HIT
+            return True
+        
         if self.is_jumping > 0:
             self.player_status = Status.DODGED
             return False
