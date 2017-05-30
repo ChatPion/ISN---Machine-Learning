@@ -13,7 +13,7 @@ def render(array, fenetre):
     
     pygame.display.flip()
 
-#train('save_file', training_params={'cycle_nb': 200})
+train('save_file', training_params={'cycle_nb': 200})
 
 baseW, baseH = 64, 64
 pygame.init()
