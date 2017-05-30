@@ -96,7 +96,7 @@ class Game:
             self.is_jumping -= 1
 
     def regen_shields(self):
-        for i in reversed(range(0, len(self.shields))): # Regénè re en priorité le bouclier intérieur (indice 1)
+        for i in reversed(range(0, len(self.shields))): # Regénère en priorité le bouclier intérieur (indice 1)
             if self.shields[i] != 0:
                 self.shields[i] = max(0, self.shields[i] - 1)
                 break
