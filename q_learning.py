@@ -6,9 +6,10 @@ from os.path import isfile
 
 
 # state : ((bullet1, bullet2, bullet3, bullet4, bullet5, bullet6), (shield1, shield2))
-# bullet : [0, 5] (6 : too far)
+# bullet : [0, MAXVISION]
 # shield1 : [0, 6] (0 : on; 1-6 : off)
 # shield2 : [0, 4]
+
 # keys : ((bullet1, bullet2, bullet3, bullet4, bullet5, bullet6), (shield1, shield2))
 # values : [value of STAND, value of JUMP]
 
@@ -47,14 +48,14 @@ class Agent:
     def __init__(self, actions_values=None):
         self.actions_value = {}
         if actions_values is not None: 
-            self.actions_value = actions_values #if loading an already trained machine
+            self.actions_value = actions_values
 
     def get_value(self, state, action=None):
         if state not in self.actions_value:
-            self.actions_value[state] = [0, 0] # if encountering an unknown state
+            self.actions_value[state] = [0, 0]
         ret = self.actions_value[state]
         if action is not None:
-            ret = ret[action.value] # if wanting the value of STAND or JUMP
+            ret = ret[action.value] # Si l'on ne veut la valeur que d'une seule des actions
         return ret
 
     def set_value(self, state, action, value):
@@ -83,7 +84,7 @@ class QLearning:
         self.agent = agent
         self.epsilon = epsilon
 
-    def learn(self, state_1, action_1, state_2, reward):  # Apply Q Learning formula
+    def learn(self, state_1, action_1, state_2, reward):  # Appliquer la formule de Q Learning
         current = self.agent.get_value(state_1, action_1)
         max_t2_val = max(self.agent.get_value(state_2))
         new_val = current + self.alpha * (reward + self.gamma * max_t2_val - current)
@@ -132,16 +133,16 @@ def tick_and_learn(game, q):
     first = True
                 
     action = chosen_action
-    while first or game.is_jumping > 0: # Ticks until the end of the chosen action (1 tick if STAND, 2 ticks if JUMP)
+    while first or game.is_jumping > 0: # Tick jusqu'à la fin de l'action choisie (1 tick si STAND, 2 ticks si JUMP)
         first = False
         game.tick(action)
-        v = game.player_status
-        action = Actions.STAND # Default action
-        if v == Status.HIT:
+        s = game.player_status
+        action = Actions.STAND #Action par défaut, elle n'est pas appliquée car le joueur est en l'air
+        if s == Status.HIT:
             reward += -100
-        elif v == Status.DODGED:
+        elif s == Status.DODGED:
             reward += 10
-        elif v == Status.SHIELD_HIT:
+        elif s == Status.SHIELD_HIT:
             reward += 1
             
     q.learn(state1, chosen_action, game_to_state(game), reward)
