@@ -18,6 +18,7 @@ def load_test(path, agent_list):
     data = json.loads(file.read())
 
     training_params = data["options"]["training_params"]
+    
     test_params = data["options"]["test_params"]
     probability = float(test_params["probability"])
     steps_nb =int(test_params["steps_nb"])
@@ -25,14 +26,14 @@ def load_test(path, agent_list):
     test_duration = int(test_params["duration"])
 
     for i in range(agents_nb):
-        dict = {}
+        dic = {}
         load_data = data["data"+str(i)]
         for k, v in load_data.items():
-            dict[literal_eval(k)] = v
-        agent_list[i].actions_value = dict
+            dic[literal_eval(k)] = v
+        agent_list[i].actions_value = dic
     
 
-def test(agents_nb, steps_nb = 10, probability = 0.33, test_duration = 50, training_params={'cycle_nb': 50, 'prob_step': 10, 'game_duration': 20})
+def test(agents_nb, steps_nb = 10, probability = 0.33, test_duration = 50, training_params={'cycle_nb': 50, 'prob_step': 10, 'game_duration': 20}):
     hits = np.zeros((steps_nb, agents_nb))
     agent_list = [Agent() for i in range(agents_nb)]
     if agent_exists("stat2d"+str(agents_nb)):
@@ -51,8 +52,10 @@ def test(agents_nb, steps_nb = 10, probability = 0.33, test_duration = 50, train
         print("Agent", agent_id+1)
 
     file = open ("saves/stat2d"+str(agents_nb)+".json", "w")
-    data = json.dumps({
-        'data'+str(i): {str(k): v for k,v in agent_list[i].actions_value.items()} for i in range(agents_nb),
+    data = {}
+    for i in range(agents_nb):
+        data["data"+str(i)] = {str(k): v for k,v in agent_list[i].actions_value.items()}
+    to_write = json.dumps({
         'options': {
             'training_params': training_params,
             'test_params': {
@@ -61,9 +64,10 @@ def test(agents_nb, steps_nb = 10, probability = 0.33, test_duration = 50, train
                 'agents_nb': agents_nb,
                 'duration': test_duration
             }
-        }
-    }))
-    file.write(data)
+        },
+        'data': data
+    })
+    file.write(to_write)
     file.close()
 
     return hits
