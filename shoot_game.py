@@ -115,7 +115,8 @@ class Game:
         self.player_status = Status.NOTHING
         self.regen_shields()
 
-        self.shot_bullets += self.move_bullets()
+        bullets_at_center = self.move_bullets()
+        self.shot_bullets += bullets_at_center
         self.generate_bullets()
         
         if action == Actions.JUMP:
