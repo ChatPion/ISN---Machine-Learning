@@ -36,8 +36,8 @@ def load_test(path, agent_list):
 def test(agents_nb, steps_nb = 10, probability = 0.33, test_duration = 50, training_params={'cycle_nb': 50, 'prob_step': 10, 'game_duration': 20}):
     hits = np.zeros((steps_nb, agents_nb))
     agent_list = [Agent() for i in range(agents_nb)]
-    if agent_exists("stat2d"+str(agents_nb)):
-        load_test("stat2d"+str(agents_nb), agent_list)
+#    if agent_exists("stat2d"+str(agents_nb)):
+ #       load_test("stat2d"+str(agents_nb), agent_list)
 
     game = Game(probability, 5)
 
@@ -52,25 +52,15 @@ def test(agents_nb, steps_nb = 10, probability = 0.33, test_duration = 50, train
         print("Agent", agent_id+1)
 
     file = open ("saves/stat2d"+str(agents_nb)+".json", "w")
-    data = {}
-    for i in range(agents_nb):
-        data["data"+str(i)] = {str(k): v for k,v in agent_list[i].actions_value.items()}
+    
     to_write = json.dumps({
-        'options': {
-            'training_params': training_params,
-            'test_params': {
-                'probability': probability,
-                'steps_nb': steps_nb,
-                'agents_nb': agents_nb,
-                'duration': test_duration
-            }
-        },
-        'data': data
+
+        'data'+str(i): {str(k): v for k,v in agent_list[i].actions_value.items()} for i in range(agents_nb)
     })
     file.write(to_write)
     file.close()
 
-    return hits, steps_nb
+    return hits
 
 
 def show_plot(array, rows):
@@ -80,5 +70,5 @@ def show_plot(array, rows):
     plt.plot([np.std(array[row]) for row in range (rows)], "b-")
     plt.show()
 
-values, steps_nb = test(15)
+values = test(15)
 show_plot(values, steps_nb)
