@@ -14,7 +14,7 @@ from os.path import isfile
 # values : [value of STAND, value of JUMP]
 
 
-def agent_exists(path):
+def agent_exists(path): # Vérifie qu'un fichier existe
     return isfile('saves/' + path + '.json')
 
 
@@ -103,7 +103,7 @@ class QLearning: # L'objet qui permet de faire apprendre l'agent, il le modifie
         return self.agent.explore() # Politique d'exploration
 
 
-def bullet_pos(bullets, index): 
+def bullet_pos(bullets, index): # Détermine la distance d'un tir par rapport à l'agent
     if index >= len(bullets):
         return MAX_VISION # S'il y a moins que 8 balles, il fait comme si d'autres étaient trop loin pour sa vision.
     return min(abs(bullets[index][0]), MAX_VISION) # Si les balles sont trop loin, il les voit en MAX_VISION
@@ -127,7 +127,7 @@ def set_parameters(training_params, game_params): # Définit les paramètres de 
     default_training_params = {'cycle_nb': 100, 'game_duration': 100, 'prob_step': 2}
     default_game_params = {'width': 5, 'shields_cd': None}
     
-    default_training_params.update(training_params) # Fusionne les deux bibliothèques en utilisant les valeurs de training_params lorsqu'il y a un conflit
+    default_training_params.update(training_params) # Fusionne les deux dictionnaires en utilisant les valeurs de training_params lorsqu'il y a un conflit
     default_game_params.update(game_params) # Idem avec game_params
     
     return default_training_params, default_game_params
@@ -135,7 +135,7 @@ def set_parameters(training_params, game_params): # Définit les paramètres de 
 
 def tick_and_learn(game, q): # Fait apprendre l'agent à partir du passage d'un état à un autre et de la récompense obtenue
     state1 = game_to_state(game)
-    chosen_action = q.apply_policy(state1)
+    chosen_action = q.apply_policy(state1) # Sélection de l'action à prendre selon la politique
     reward = 0 # La récompense accordée après la résolution de l'action
     first = True
                 
@@ -145,6 +145,8 @@ def tick_and_learn(game, q): # Fait apprendre l'agent à partir du passage d'un 
         game.tick(action)
         s = game.player_status
         action = Actions.STAND #Action par défaut, elle n'est pas appliquée car le joueur est en l'air
+
+        # Définition de la récompense
         if s == Status.HIT:
             reward += -100
         elif s == Status.DOUBLE_HIT:
@@ -154,7 +156,7 @@ def tick_and_learn(game, q): # Fait apprendre l'agent à partir du passage d'un 
         elif s == Status.SHIELD_HIT:
             reward += 1
             
-    q.learn(state1, chosen_action, game_to_state(game), reward)
+    q.learn(state1, chosen_action, game_to_state(game), reward) # Application de la formule d'apprentissage
 
 
 def train(agent=None, save_file=None, training_params=None, game_params=None, learn_rate=0.3, discount_rate=0.8, show_prints=True):
@@ -169,7 +171,8 @@ def train(agent=None, save_file=None, training_params=None, game_params=None, le
     :param show_prints: 
     :return: 
     """
-    
+
+    # On récupère les paramètres de l'entraînement
     training_params, game_params = set_parameters(training_params, game_params)
 
     if agent is None: # Si non spécifié, crée un nouvel agent vierge
