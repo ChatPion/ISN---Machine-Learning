@@ -32,7 +32,7 @@ def load_test(path, agent_list):
             dic[literal_eval(k)] = v
         agent_list[i].actions_value = dic
     
-        return training_params, probability, steps_nb, agents_nb, test_duration, data['old_results'], agent_list
+    return training_params, probability, steps_nb, agents_nb, test_duration, data['old_results'], agent_list
 
 def test(agents_nb, continued = False, steps_nb = 100, probability = 0.66, test_duration = 10000, training_params={'cycle_nb': 1, 'prob_step': 10, 'game_duration': 20}):
     agent_list = [Agent() for i in range(agents_nb)]
