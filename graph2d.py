@@ -34,7 +34,7 @@ def load_test(path, agent_list):
     
         return training_params, probability, steps_nb, agents_nb, test_duration, data['old_results'], agent_list
 
-def test(agents_nb, continued = False, steps_nb = 100, probability = 0.66, test_duration = 10000, training_params={'cycle_nb': 1, 'prob_step': 10, 'game_duration': 20}):
+def test(agents_nb, continued = False, steps_nb = 50, probability = 0.33, test_duration = 100, training_params={'cycle_nb': 1, 'prob_step': 10, 'game_duration': 20}):
     agent_list = [Agent() for i in range(agents_nb)]
     old_results = []
     if continued and agent_exists("stat2d"+str(agents_nb)):
@@ -49,7 +49,7 @@ def test(agents_nb, continued = False, steps_nb = 100, probability = 0.66, test_
             game.reset()
             hits[len(hits) - steps_nb + step][agent_id] = play_game(agent, game, test_duration)
 
-            agent =  train(agent = agent, training_params=training_params, show_prints=False)
+            agent =  train(agent = agent, training_params=training_params, learn_rate =0.3, discount_rate=0.8, show_prints=False)
             
         print("Agent", agent_id+1)
         
@@ -88,11 +88,11 @@ def show_plot(array, rows, columns):
  #   for i in range(columns):
 #        plt.plot([array[j][i] for j in range(rows)], "r-")
     plt.plot([np.mean(array[row]) for row in range(rows)], "g-")
-    for i in range(rows):
-        plt.plot([i, i], [np.mean(array[i]) - np.std(array[i]), np.mean(array[i]) + np.std(array[i])], "b-", linewidth = 0.5)
-    plt.plot([np.std(array[row]) for row in range (rows)], "b-", linewidth = 0.5)
+##    for i in range(rows):
+##        plt.plot([i, i], [np.mean(array[i]) - np.std(array[i]), np.mean(array[i]) + np.std(array[i])], "b-", linewidth = 0.5)
+##    plt.plot([np.std(array[row]) for row in range (rows)], "b-", linewidth = 0.5)
     plt.axis([0, rows, 0, 0.6])
     plt.show()
     
-values = test(4, continued = False)
+values = test(10, continued = True)
 show_plot(values, len(values), len(values[0]))
