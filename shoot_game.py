@@ -18,7 +18,7 @@ class Actions(Enum):
 class Status(Enum):
     NOTHING = 0
     HIT = 1
-    DOUBLE_HIT = 2
+    DOUBLE_HIT = 2 # Si le joueur sans bouclier reçoit une balle de chaque côté
     SHIELD_HIT = 3
     DODGED = 4 # Si le joueur est en l'air avec une balle en dessous.
 
@@ -41,20 +41,20 @@ class Game:
         self.time = 0
         self.shot_bullets = 0 # Le nombre de balles tirées depuis le début de la partie
         self.nb_hit = 0  # Le nombre de balles reçues sans bouclier depuis le début de la partie
-        self.shields_cooldown = shields 
-        self.shields = [0 for i in shields] 
+        self.shields_cooldown = shields
+        self.shields = [0 for i in shields]
         self.player_status = Status.NOTHING
 
-    def shoot(self, position, direction): # Faire apparaître une balle
+    def shoot(self, position, direction): # Fait apparaître une balle
         self.bullets.append([position, direction])
 
-    def jump(self): # Faire sauter le joueur
+    def jump(self): # Fait sauter le joueur
         if self.is_jumping == 0:
             self.is_jumping = 3
 
     def move_bullets(self): # Fait avancer les balles
         """
-        :return: Number of bullets that reached 0 
+        :return to_kill: Number of bullets that reached 0 
         """
         to_kill = 0 # Le nombre de balles atteignant 0 après déplacement
         to_delete = 0 # Le nombre de balles sortant de l'écran après déplacement

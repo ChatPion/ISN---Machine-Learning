@@ -32,13 +32,13 @@ def load_test(path, agent_list):
             dic[literal_eval(k)] = v
         agent_list[i].actions_value = dic
     
-        return training_params, probability, steps_nb, agents_nb, test_duration, data['old_results'], agent_list
+    return training_params, probability, agents_nb, test_duration, data['old_results'], agent_list
 
-def test(agents_nb, continued = False, steps_nb = 50, probability = 0.33, test_duration = 100, training_params={'cycle_nb': 1, 'prob_step': 10, 'game_duration': 20}):
+def test(agents_nb, continued = False, steps_nb = 95, probability = 0.33, test_duration = 100, training_params={'cycle_nb': 1, 'prob_step': 10, 'game_duration': 20}):
     agent_list = [Agent() for i in range(agents_nb)]
     old_results = []
     if continued and agent_exists("stat2d"+str(agents_nb)):
-        training_params, probability, steps_nb, agents_nb, test_duration, old_results, agent_list = load_test("stat2d"+str(agents_nb), agent_list)
+        training_params, probability, agents_nb, test_duration, old_results, agent_list = load_test("stat2d"+str(agents_nb), agent_list)
     hits = old_results + [[0 for i in range(agents_nb)] for j in range(steps_nb)]
     
     game = Game(probability, 5)
