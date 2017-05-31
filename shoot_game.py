@@ -52,6 +52,10 @@ class Game:
         if self.is_jumping == 0:
             self.is_jumping = 3
 
+    def fall(self): # Fait tomber le joueur
+        if self.is_jumping > 0:
+            self.is_jumping -= 1
+
     def move_bullets(self): # Fait avancer les balles
         """
         :return to_kill: Number of bullets that reached 0 
@@ -78,7 +82,7 @@ class Game:
         """
         :return: True if hit without a shield, False if other
         """
-        if self.player_status == Status.HIT:
+        if self.player_status == Status.HIT: # Si take_dmg est appelée deux fois, et qu'elle a déjà mis Status.HIT, elle met forcément Status.DOUBLE_HIT
             self.player_status = Status.DOUBLE_HIT
             return True
         
@@ -96,17 +100,13 @@ class Game:
         self.nb_hit += 1
         return True
 
-    def fall(self):
-        if self.is_jumping > 0:
-            self.is_jumping -= 1
-
-    def regen_shields(self):
+    def regen_shields(self): # Regénère un bouclier de 1.
         for i in reversed(range(0, len(self.shields))): # Regénère en priorité le bouclier intérieur (indice 1)
             if self.shields[i] != 0:
                 self.shields[i] = max(0, self.shields[i] - 1)
                 break
 
-    def generate_bullets(self):
+    def generate_bullets(self): # 
         if rand.uniform(0, 1) < self.probability:
             self.shoot(self.width, -1)
         if rand.uniform(0, 1) < self.probability:
