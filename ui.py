@@ -54,7 +54,7 @@ class UI:
     def prepare_rendering(self, frames_per_update, dt):
         render_list = []
 
-        dt = self.method_name(dt, frames_per_update)
+        dt = self.inverse_dt(dt, frames_per_update)
 
         # Bullets
         for x, dir in self.bullet_list:
@@ -73,7 +73,7 @@ class UI:
         self.render_ui(dt, frames_per_update)
         self.render(render_list)
 
-    def method_name(self, dt, frames_per_update):
+    def inverse_dt(self, dt, frames_per_update):
         dt = frames_per_update - dt
         return dt
 
