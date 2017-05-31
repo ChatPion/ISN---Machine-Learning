@@ -74,7 +74,7 @@ class Game:
 
         return to_kill
 
-    def take_dmg(self): # Appelée à chaque fois qu'une balle arrive en 0
+    def take_dmg(self): # Appelée à chaque fois qu'une balle arrive en 0, calcule les dégâts
         """
         :return: True if hit without a shield, False if other
         """
@@ -96,23 +96,23 @@ class Game:
         self.nb_hit += 1
         return True
 
-    def fall(self):
+    def fall(self): # Fait tomber l'agent
         if self.is_jumping > 0:
             self.is_jumping -= 1
 
-    def regen_shields(self):
+    def regen_shields(self): # Regénère les boucliers
         for i in reversed(range(0, len(self.shields))): # Regénère en priorité le bouclier intérieur (indice 1)
             if self.shields[i] != 0:
                 self.shields[i] = max(0, self.shields[i] - 1)
                 break
 
-    def generate_bullets(self):
+    def generate_bullets(self): # Génère des tirs à droite et/ou à gauche
         if rand.uniform(0, 1) < self.probability:
             self.shoot(self.width, -1)
         if rand.uniform(0, 1) < self.probability:
             self.shoot(-self.width, 1)
 
-    def tick(self, action):
+    def tick(self, action): # Fait avancer le jeu d'un tour
         """
         :param action: STAND or JUMP 
         """
@@ -133,7 +133,7 @@ class Game:
             
         self.time += 1
 
-    def reset(self):
+    def reset(self): # Remettre le jeu à zéro
         self.bullets = []
         self.deadbullets = []
         self.is_jumping = 0
