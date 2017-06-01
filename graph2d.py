@@ -76,7 +76,7 @@ def test(agents_nb, continued = False, erase = True, steps_nb = 95, probability 
         file = open ("saves/stat2d"+str(agents_nb)+".json", "r")
     return hits
 
-def show_plot(array, rows, columns, all_agents=False, mean=True, range=True, std=False, x1=0, x2=100, y1=0, y2=0.6):
+def show_plot(array, rows, columns, all_agents=False, mean=True, intervals=True, std=False, x1=0, x2=100, y1=0, y2=0.6):
     
     if all_agents == True:
         for i in range(columns):
@@ -85,7 +85,7 @@ def show_plot(array, rows, columns, all_agents=False, mean=True, range=True, std
     if mean == True:
         plt.plot([np.mean(array[row]) for row in range(rows)], "g-")
         
-    if range == True:
+    if intervals == True:
         for i in range(rows):
             plt.plot([i, i], [np.mean(array[i]) - np.std(array[i]), np.mean(array[i]) + np.std(array[i])], "b-", linewidth = 0.5)
             
