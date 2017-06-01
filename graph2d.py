@@ -34,7 +34,7 @@ def load_test(path, agent_list):
     
     return training_params, probability, agents_nb, test_duration, data['old_results'], agent_list
 
-def test(agents_nb, continued = False, steps_nb = 95, probability = 0.33, test_duration = 100, training_params={'cycle_nb': 1, 'prob_step': 10, 'game_duration': 20}):
+def test(agents_nb, continued = False, erase = True, steps_nb = 95, probability = 0.33, test_duration = 100, training_params={'cycle_nb': 1, 'prob_step': 10, 'game_duration': 20}):
     agent_list = [Agent() for i in range(agents_nb)]
     old_results = []
     if continued and agent_exists("stat2d"+str(agents_nb)):
@@ -52,47 +52,48 @@ def test(agents_nb, continued = False, steps_nb = 95, probability = 0.33, test_d
             agent =  train(agent = agent, training_params=training_params, learn_rate =0.3, discount_rate=0.8, show_prints=False)
             
         print("Agent", agent_id+1)
-        
-    file = open ("saves/stat2d"+str(agents_nb)+".json", "w")
-    data = {}
-    for i in range(agents_nb):
-        data["data"+str(i)] = {str(k): v for k,v in agent_list[i].actions_value.items()}
-    to_write = json.dumps({
-        'data': data,
-        'options': {
-            'training_params': training_params,
-            'test_params': {
-                'probability': probability,
-                'steps_nb': steps_nb,
-                'agents_nb': agents_nb,
-                'duration': test_duration
-            }
-        },
-        'old_results': hits
-    })
-    file.write(to_write)
-    file.close()
-    file = open ("saves/stat2d"+str(agents_nb)+".json", "r")
+
+    if erase == True:           
+        file = open ("saves/stat2d"+str(agents_nb)+".json", "w")
+        data = {}
+        for i in range(agents_nb):
+            data["data"+str(i)] = {str(k): v for k,v in agent_list[i].actions_value.items()}
+        to_write = json.dumps({
+            'data': data,
+            'options': {
+                'training_params': training_params,
+                'test_params': {
+                    'probability': probability,
+                    'steps_nb': steps_nb,
+                    'agents_nb': agents_nb,
+                    'duration': test_duration
+                }
+            },
+            'old_results': hits
+        })
+        file.write(to_write)
+        file.close()
+        file = open ("saves/stat2d"+str(agents_nb)+".json", "r")
     return hits
 
-def show_plot(array, rows, columns):
-##    for i in range(columns):
-##        plt.plot([array[j][i] for j in range(rows)], "r-", linewidth = 1.0)
-## #   plt.plot([np.mean(array[row]) for row in range(rows)], "g-")
-## #   for i in range(rows):
-###        plt.plot([i, i], [np.mean(array[i]) - np.std(array[i]), np.mean(array[i]) + np.std(array[i])], "b-", linewidth = 1.0)
-##    plt.plot([np.std(array[row]) for row in range (rows)], "b-", linewidth = 0.5)
-##    plt.axis([0, rows, 0, 0.6])
-##    plt.show()
+def show_plot(array, rows, columns, all_agents=False, mean=True, range=True, std=False, x1=0, x2=100, y1=0, y2=0.6):
     
- #   for i in range(columns):
-#        plt.plot([array[j][i] for j in range(rows)], "r-")
-    plt.plot([np.mean(array[row]) for row in range(rows)], "g-")
-##    for i in range(rows):
-##        plt.plot([i, i], [np.mean(array[i]) - np.std(array[i]), np.mean(array[i]) + np.std(array[i])], "b-", linewidth = 0.5)
-##    plt.plot([np.std(array[row]) for row in range (rows)], "b-", linewidth = 0.5)
-    plt.axis([0, rows, 0, 0.6])
+    if all_agents == True:
+        for i in range(columns):
+            plt.plot([array[j][i] for j in range(rows)], "r-")
+            
+    if mean == True:
+        plt.plot([np.mean(array[row]) for row in range(rows)], "g-")
+        
+    if range == True:
+        for i in range(rows):
+            plt.plot([i, i], [np.mean(array[i]) - np.std(array[i]), np.mean(array[i]) + np.std(array[i])], "b-", linewidth = 0.5)
+            
+    if std == True:
+        plt.plot([np.std(array[row]) for row in range (rows)], "b-", linewidth = 0.5)
+    
+    plt.axis([x1, x2, y1, y2])
     plt.show()
     
-values = test(10, continued = True)
-show_plot(values, len(values), len(values[0]))
+values = test(10, continued = False)
+show_plot(array = values, rows = len(values), columns = len(values[0]))
