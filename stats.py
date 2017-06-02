@@ -1,11 +1,11 @@
+import os
+from os.path import isfile
+
 import matplotlib.pyplot as plt
 import numpy as np
-from mpl_toolkits.mplot3d import Axes3D
-from q_learning import Agent, load_agent, train, game_to_state
-from shoot_game import Game, Status
-from os.path import isfile
-import os
 
+from q_learning import Agent, load_agent, train, game_to_state
+from shoot_game import Game
 
 plt.xkcd()
 

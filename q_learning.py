@@ -1,8 +1,9 @@
-import random as rand
-from shoot_game import Game, Status, Actions
 import json
+import random as rand
 from ast import literal_eval
 from os.path import isfile
+
+from shoot_game import Game, Status, Actions
 
 
 # state : ((bullet1, bullet2, bullet3, bullet4, bullet5, bullet6, bullet7, bullet8), (shield1, shield2))

@@ -1,8 +1,10 @@
+from math import floor
+
 import pygame
 from pygame.locals import *
-from shoot_game import Game, Actions, Status
-from q_learning import Agent, load_agent, game_to_state, train
-from math import floor
+
+from q_learning import game_to_state
+from shoot_game import Game, Status
 
 
 # Interface graphique du jeu

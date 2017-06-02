@@ -8,8 +8,9 @@
 
 # boucliers : vaut temps de rechargement (0 si disponible)
 
-from enum import Enum
 import random as rand
+from enum import Enum
+
 
 class Actions(Enum):
     STAND = 0
