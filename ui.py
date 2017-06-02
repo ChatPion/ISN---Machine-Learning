@@ -1,8 +1,6 @@
 from math import floor
-
 import pygame
 from pygame.locals import *
-
 from q_learning import game_to_state
 from shoot_game import Game, Status
 

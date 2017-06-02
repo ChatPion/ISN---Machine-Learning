@@ -1,6 +1,5 @@
 import pygame
 from pygame.locals import *
-
 from shoot_game import Game, Actions, Status
 
 

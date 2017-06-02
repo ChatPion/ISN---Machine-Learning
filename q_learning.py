@@ -2,7 +2,6 @@ import json
 import random as rand
 from ast import literal_eval
 from os.path import isfile
-
 from shoot_game import Game, Status, Actions
 
 

@@ -1,9 +1,7 @@
 import os
 from os.path import isfile
-
 import matplotlib.pyplot as plt
 import numpy as np
-
 from q_learning import Agent, load_agent, train, game_to_state
 from shoot_game import Game
 
