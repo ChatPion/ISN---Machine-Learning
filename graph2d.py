@@ -1,11 +1,10 @@
-import numpy as np
-import matplotlib.pyplot as plt
-from shoot_game import Game, Status
-from q_learning import Agent,  train, game_to_state, agent_exists
 import json
 from ast import literal_eval
-from os.path import isfile
-import os
+import matplotlib.pyplot as plt
+import numpy as np
+from q_learning import Agent, train, game_to_state, agent_exists
+from shoot_game import Game
+
 
 def play_game(agent, game, duration):
     for i in range(duration):
