@@ -178,7 +178,7 @@ def train(agent=None, save_file=None, training_params=None, game_params=None, le
     if agent is None: # Si non spécifié, crée un nouvel agent vierge
         agent = Agent()
 
-    q = QLearning(learn_rate, discount_rate, agent, 1)
+    q = QLearning(learn_rate, discount_rate, agent, 0.8)
 
     cycle_nb = training_params['cycle_nb']
     game_duration = training_params['game_duration']
