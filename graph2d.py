@@ -34,7 +34,7 @@ def load_test(path, agent_list):
     
     return training_params, probability, agents_nb, test_duration, data['old_results'], agent_list
 
-def test(agents_nb, continued = False, erase = True, steps_nb = 95, probability = 0.33, test_duration = 100, training_params={'cycle_nb': 1, 'prob_step': 10, 'game_duration': 20}):
+def test(agents_nb, continued = False, erase = True, steps_nb = 50, probability = 0.33, test_duration = 1000, training_params={'cycle_nb': 1, 'prob_step': 10, 'game_duration': 20}):
     agent_list = [Agent() for i in range(agents_nb)]
     old_results = []
     if continued and agent_exists("stat2d"+str(agents_nb)):
@@ -76,7 +76,7 @@ def test(agents_nb, continued = False, erase = True, steps_nb = 95, probability 
         file = open ("saves/stat2d"+str(agents_nb)+".json", "r")
     return hits
 
-def show_plot(array, rows, columns, all_agents=False, mean=True, intervals=True, std=False, x1=0, x2=100, y1=0, y2=0.6):
+def show_plot(array, rows, columns, all_agents=False, mean=True, intervals=True, std=False, x1=0, x2=50, y1=0, y2=0.6):
     
     if all_agents == True:
         for i in range(columns):
