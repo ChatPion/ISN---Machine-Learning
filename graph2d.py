@@ -33,7 +33,7 @@ def load_test(path, agent_list):
     
     return training_params, probability, agents_nb, test_duration, data['old_results'], agent_list
 
-def test(agents_nb, continued = False, erase = True, steps_nb = 50, probability = 0.33, test_duration = 1000, training_params={'cycle_nb': 1, 'prob_step': 10, 'game_duration': 20}):
+def test(agents_nb, continued = False, erase = True, steps_nb = 70, probability = 0.33, test_duration = 1000, alpha=0.3, gamma=0.8, epsilon=0.8, training_params={'cycle_nb': 1, 'prob_step': 10, 'game_duration': 20}):
     agent_list = [Agent() for i in range(agents_nb)]
     old_results = []
     if continued and agent_exists("stat2d"+str(agents_nb)):
@@ -48,7 +48,7 @@ def test(agents_nb, continued = False, erase = True, steps_nb = 50, probability 
             game.reset()
             hits[len(hits) - steps_nb + step][agent_id] = play_game(agent, game, test_duration)
 
-            agent =  train(agent = agent, training_params=training_params, learn_rate =0.3, discount_rate=0.8, show_prints=False)
+            agent =  train(agent = agent, training_params=training_params, learn_rate=alpha, discount_rate=gamma, policy=epsilon, show_prints=False)
             
         print("Agent", agent_id+1)
 
@@ -75,7 +75,11 @@ def test(agents_nb, continued = False, erase = True, steps_nb = 50, probability 
         file = open ("saves/stat2d"+str(agents_nb)+".json", "r")
     return hits
 
-def show_plot(array, rows, columns, all_agents=False, mean=True, intervals=True, std=False, x1=0, x2=50, y1=0, y2=0.6):
+values= test(10, continued = False, alpha=0.000001)
+x = len(values)
+y = len(values[0])
+
+def show_plot(array, rows, columns, all_agents=False, mean=True, intervals=True, std=False, x1=0, x2=x, y1=0, y2=0.6):
     
     if all_agents == True:
         for i in range(columns):
@@ -94,5 +98,5 @@ def show_plot(array, rows, columns, all_agents=False, mean=True, intervals=True,
     plt.axis([x1, x2, y1, y2])
     plt.show()
     
-values = test(10, continued = False)
-show_plot(array = values, rows = len(values), columns = len(values[0]))
+
+show_plot(values,x, y, intervals=False)
