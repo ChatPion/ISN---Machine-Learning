@@ -31,13 +31,13 @@ def load_test(path, agent_list):
             dic[literal_eval(k)] = v
         agent_list[i].actions_value = dic
     
-    return training_params, probability, agents_nb, test_duration, data['old_results'], agent_list
+    return training_params, probability, agents_nb, data['old_results'], agent_list
 
-def test(agents_nb, continued = False, erase = True, steps_nb = 70, probability = 0.33, test_duration = 1000, alpha=0.3, gamma=0.8, epsilon=0.8, training_params={'cycle_nb': 1, 'prob_step': 10, 'game_duration': 20}):
+def test(agents_nb, continued = False, erase = True, steps_nb = 70, probability=0.33, test_duration = 400, alpha=0.3, gamma=0.8, epsilon=0.8, training_params={'cycle_nb': 1, 'prob_step': 10, 'game_duration': 20}):
     agent_list = [Agent() for i in range(agents_nb)]
     old_results = []
     if continued and agent_exists("stat2d"+str(agents_nb)):
-        training_params, probability, agents_nb, test_duration, old_results, agent_list = load_test("stat2d"+str(agents_nb), agent_list)
+        training_params, probability, agents_nb, old_results, agent_list = load_test("stat2d"+str(agents_nb), agent_list)
     hits = old_results + [[0 for i in range(agents_nb)] for j in range(steps_nb)]
     
     game = Game(probability, 5)
@@ -75,7 +75,7 @@ def test(agents_nb, continued = False, erase = True, steps_nb = 70, probability 
         file = open ("saves/stat2d"+str(agents_nb)+".json", "r")
     return hits
 
-values= test(10, continued = False, alpha=0.000001)
+values= test(10, continued = True, steps_nb = 400, probability=0.66, alpha=3)
 x = len(values)
 y = len(values[0])
 
