@@ -159,7 +159,7 @@ def tick_and_learn(game, q): # Fait apprendre l'agent à partir du passage d'un 
     q.learn(state1, chosen_action, game_to_state(game), reward) # Application de la formule d'apprentissage
 
 
-def train(agent=None, save_file=None, training_params=None, game_params=None, learn_rate=0.3, discount_rate=0.8, show_prints=True):
+def train(agent=None, save_file=None, training_params=None, game_params=None, learn_rate=0.3, discount_rate=0.8, policy=0.8, show_prints=True):
     """
     
     :param agent: agent to train
@@ -178,7 +178,7 @@ def train(agent=None, save_file=None, training_params=None, game_params=None, le
     if agent is None: # Si non spécifié, crée un nouvel agent vierge
         agent = Agent()
 
-    q = QLearning(learn_rate, discount_rate, agent, 0.8)
+    q = QLearning(learn_rate, discount_rate, agent, policy)
 
     cycle_nb = training_params['cycle_nb']
     game_duration = training_params['game_duration']
