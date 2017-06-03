@@ -33,7 +33,7 @@ def load_test(path, agent_list):
     
     return training_params, probability, agents_nb, data['old_results'], agent_list
 
-def test(agents_nb, continued = False, erase = True, steps_nb = 70, probability=0.33, test_duration = 400, alpha=0.3, gamma=0.8, epsilon=0.8, training_params={'cycle_nb': 1, 'prob_step': 10, 'game_duration': 20}):
+def test(agents_nb, continued=False, erase=True, steps_nb=70, probability=0.33, test_duration=400, alpha=3, gamma=0.8, epsilon=0.3, training_params={'cycle_nb': 1, 'prob_step': 10, 'game_duration': 20}):
     agent_list = [Agent() for i in range(agents_nb)]
     old_results = []
     if continued and agent_exists("stat2d"+str(agents_nb)):
@@ -47,12 +47,11 @@ def test(agents_nb, continued = False, erase = True, steps_nb = 70, probability=
         for step in range(steps_nb):
             game.reset()
             hits[len(hits) - steps_nb + step][agent_id] = play_game(agent, game, test_duration)
-
-            agent =  train(agent = agent, training_params=training_params, learn_rate=alpha, discount_rate=gamma, policy=epsilon, show_prints=False)
+            agent = train(agent=agent, training_params=training_params, learn_rate=alpha, discount_rate=gamma, policy=epsilon, show_prints=False)
             
         print("Agent", agent_id+1)
 
-    if erase == True:           
+    if erase == True:
         file = open ("saves/stat2d"+str(agents_nb)+".json", "w")
         data = {}
         for i in range(agents_nb):
@@ -75,7 +74,7 @@ def test(agents_nb, continued = False, erase = True, steps_nb = 70, probability=
         file = open ("saves/stat2d"+str(agents_nb)+".json", "r")
     return hits
 
-values= test(10, continued = True, steps_nb = 400, probability=0.66, alpha=3)
+values= test(10, continued=False, steps_nb=100, probability=0.66, gamma=1)
 x = len(values)
 y = len(values[0])
 
