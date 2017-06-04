@@ -4,9 +4,8 @@
 
 Needs python3
 
-Dependencies  :
+To install missing dependencies  :
 ```
-#!bash
 pip install -r requirements.txt
 ```
 
