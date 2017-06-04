@@ -1,7 +1,8 @@
-__pycache__
-.idea/*
-*.json
 rapport.pdf
+__pycache__
+play_game.py
+jump_play.py
+random_play.py
 tests/*
 saves/*
 imgs/unused/*

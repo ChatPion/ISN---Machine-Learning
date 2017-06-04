@@ -20,9 +20,7 @@ def load_test(path, agent_list):
     
     test_params = data["options"]["test_params"]
     probability = float(test_params["probability"])
-    steps_nb = int(test_params['steps_nb'])
     agents_nb = int(test_params["agents_nb"])
-    test_duration = int(test_params["duration"])
     
     for i in range(agents_nb):
         dic = {}
@@ -31,13 +29,13 @@ def load_test(path, agent_list):
             dic[literal_eval(k)] = v
         agent_list[i].actions_value = dic
     
-    return test_duration, probability, agents_nb, data['old_results'], agent_list
+    return training_params, probability, agents_nb, data['old_results'], agent_list
 
 def test(agents_nb, continued = False, erase = True, steps_nb = 100, probability=0.33, test_duration = 400, alpha=0.3, gamma=0.8, epsilon=0.8, training_params={'cycle_nb': 1, 'prob_step': 10, 'game_duration': 20}):
     agent_list = [Agent() for i in range(agents_nb)]
     old_results = []
     if continued and agent_exists("stat2d"+str(agents_nb)):
-        test_duration, probability, agents_nb, old_results, agent_list = load_test("stat2d"+str(agents_nb), agent_list)
+        training_params, probability, agents_nb, old_results, agent_list = load_test("stat2d"+str(agents_nb), agent_list)
     hits = old_results + [[0 for i in range(agents_nb)] for j in range(steps_nb)]
     
     game = Game(probability, 5)
@@ -52,7 +50,7 @@ def test(agents_nb, continued = False, erase = True, steps_nb = 100, probability
             
         print("Agent", agent_id+1)
 
-    if erase == True:           
+    if erase:           
         file = open ("saves/stat2d"+str(agents_nb)+".json", "w")
         data = {}
         for i in range(agents_nb):
@@ -63,9 +61,7 @@ def test(agents_nb, continued = False, erase = True, steps_nb = 100, probability
                 'training_params': training_params,
                 'test_params': {
                     'probability': probability,
-                    'steps_nb': steps_nb,
                     'agents_nb': agents_nb,
-                    'duration': test_duration
                 }
             },
             'old_results': hits
@@ -81,18 +77,18 @@ y = len(values[0])
 
 def show_plot(array, rows, columns, all_agents=False, mean=True, intervals=False, std=False, x1=0, x2=x, y1=0, y2=0.6):
     
-    if all_agents == True:
+    if all_agents:
         for i in range(columns):
             plt.plot([i for i in range(rows)], [array[j][i] for j in range(rows)], "r-")
             
-    if mean == True:
+    if mean:
         plt.plot([i for i in range(rows)], [np.mean(array[row]) for row in range(rows)], "g-")
         
-    if intervals == True: # Displays the standard deviation around the mean curve
+    if intervals: # Displays the standard deviation around the mean curve
         for i in range(rows):
             plt.plot([i, i], [np.mean(array[i]) - np.std(array[i]), np.mean(array[i]) + np.std(array[i])], "b-", linewidth = 0.5)
             
-    if std == True: # Displays the standard deviation as another curve
+    if std: # Displays the standard deviation as another curve
         plt.plot([i for i in range(rows)], [np.std(array[row]) for row in range (rows)], "b-", linewidth = 0.5)
     
     plt.axis([x1, x2, y1, y2])
