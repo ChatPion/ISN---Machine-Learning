@@ -83,7 +83,7 @@ class Game:
         """
         :return: True if hit without a shield, False if other
         """
-        if self.player_status == Status.HIT: # Si take_dmg est appelée deux fois, et qu'elle a déjà mis Status.HIT, elle met forcément Status.DOUBLE_HIT
+        if self.player_status == Status.HIT: # Si take_dmg est appelée une deuxième fois, et qu'elle a déjà mis Status.HIT, elle met forcément Status.DOUBLE_HIT
             self.player_status = Status.DOUBLE_HIT
             return True
         
