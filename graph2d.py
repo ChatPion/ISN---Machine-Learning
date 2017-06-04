@@ -12,6 +12,7 @@ def play_game(agent, game, duration):
         game.tick(action)
     return game.nb_hit / game.shot_bullets if game.shot_bullets > 0 else 0
 
+
 def load_test(path, agent_list):
     file = open("saves/" + path + ".json", "r")
     data = json.loads(file.read())
@@ -33,7 +34,12 @@ def load_test(path, agent_list):
     
     return training_params, probability, agents_nb, data['old_results'], agent_list
 
-def test(agents_nb, continued = False, erase = True, steps_nb = 70, probability=0.33, test_duration = 200, alpha=0.3, gamma=0.8, epsilon=0.8, training_params={'cycle_nb': 5, 'prob_step': 10, 'game_duration': 20}):
+
+def test(agents_nb, continued=False, erase=True, steps_nb=70, probability=0.33, test_duration=200, alpha=0.3, gamma=0.8, epsilon=0.8,
+         training_params=None):
+    if training_params is None:
+        training_params = {'cycle_nb': 5, 'prob_step': 10, 'game_duration': 20}
+
     agent_list = [Agent() for i in range(agents_nb)]
     old_results = []
     if continued and agent_exists("stat2d"+str(agents_nb)):
@@ -52,7 +58,7 @@ def test(agents_nb, continued = False, erase = True, steps_nb = 70, probability=
             
         print("Agent", agent_id+1)
 
-    if erase == True:           
+    if erase:
         file = open ("saves/stat2d"+str(agents_nb)+".json", "w")
         data = {}
         for i in range(agents_nb):
@@ -72,27 +78,26 @@ def test(agents_nb, continued = False, erase = True, steps_nb = 70, probability=
         })
         file.write(to_write)
         file.close()
-        file = open ("saves/stat2d"+str(agents_nb)+".json", "r")
     return hits
 
-values= test(10, continued = True, test_duration=200, steps_nb = 160, probability=0.66, alpha=0.1)
+values = test(10, continued=True, test_duration=200, steps_nb=160, probability=0.66, alpha=0.1)
 x = len(values)
 y = len(values[0])
 
+
 def show_plot(array, rows, columns, all_agents=False, mean=True, intervals=True, std=False, x1=0, x2=5*x, y1=0, y2=0.6):
-    
-    if all_agents == True:
+    if all_agents:
         for i in range(columns):
             plt.plot([i*5 for i in range(rows)], [array[j][i] for j in range(rows)], "r-")
             
-    if mean == True:
+    if mean:
         plt.plot([i*5 for i in range(rows)], [np.mean(array[row]) for row in range(rows)], "g-")
         
-    if intervals == True:
+    if intervals:
         for i in range(rows):
             plt.plot([i*5, i*5], [np.mean(array[i]) - np.std(array[i]), np.mean(array[i]) + np.std(array[i])], "b-", linewidth = 0.5)
             
-    if std == True:
+    if std:
         plt.plot([i*5 for i in range(rows)], [np.std(array[row]) for row in range (rows)], "b-", linewidth = 0.5)
     
     plt.axis([x1, x2, y1, y2])
