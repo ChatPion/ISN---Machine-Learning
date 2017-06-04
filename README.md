@@ -2,15 +2,15 @@
 
 ### Configuration
 
-Nécessite python3.
+Needs python3
 
-Pour installer les dépendances nécessaires :
+Dependencies  :
 ```
 #!bash
 pip install -r requirements.txt
 ```
 
-### Organisation du programme
-Pour lancer un entraînement et afficher l'interface graphique, lancer *trained_play.py*
+### Code organisation
+To start training and show an UI, use *trained_play.py*
 
-Pour afficher des graphiques, lancer *graph3d.py* ou *graph2d.py*
+To draw graphs, use *graph3d.py* ou *graph2d.py*
